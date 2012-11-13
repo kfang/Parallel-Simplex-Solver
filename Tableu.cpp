@@ -10,6 +10,7 @@ public:
 	void printMat();
 	void testPopulate();
 	void addRow();
+	void swapCols(int, int);
 };
 
 Tableau::Tableau(int row, int col){
@@ -40,6 +41,14 @@ void Tableau::addRow(){
 	rows++;
 	delete[] matrix;
 	matrix = tempMat;
+}
+
+void Tableau::swapCols(int a, int b){
+	for (int i = 0; i < rows; i++){
+		int temp = matrix[i][a];
+		matrix[i][a] = matrix[i][b];
+		matrix[i][b] = temp;
+	}
 }
 
 void Tableau::printMat(){
@@ -73,6 +82,9 @@ int main() {
 	a->printMat();
 	cout << '\n';
 	a->addRow();
+	a->printMat();
+	cout << '\n';
+	a->swapCols(0, 3);
 	a->printMat();
 	return 0;
 }
