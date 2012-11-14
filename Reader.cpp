@@ -145,6 +145,8 @@ int main() {
 				getline(file, s);
 			}
 		}
+	} else {
+		return 1;
 	}
 	file.close();
 	
