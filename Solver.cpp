@@ -4,15 +4,13 @@
 #include <list>
 #include <stdlib.h>
 #include <vector>
-#include "GridPos.cpp"
-#include "Tableau.cpp"
 
 using namespace std;
 
 class Solver {
-	Tableau tableau;
+	Tableau* tableau;
 public:
-	Solver (Tableau);
+	Solver (Tableau*);
 	void solve();
 	vector<int> possible_incoming();
 	int select_incoming(vector<int>);
@@ -21,6 +19,10 @@ public:
 	void pivot(int, int);
 	bool check_if_done();
 };
+
+Solver::Solver(Tableau* t){
+	tableau = t;
+}
 
 void Solver::solve() {
 	while(!check_if_done()) {
@@ -35,7 +37,7 @@ void Solver::solve() {
 }
 
 void Solver::pivot(int incoming, int outgoing) {
-	tableau.pivot(incoming, outgoing);
+	tableau->pivot(incoming, outgoing);
 }
 
 //might want to use blas
@@ -55,11 +57,44 @@ int Solver::select_outgoing(){
 
 //if all negatives in a column, infinite solutions, return true
 bool Solver::isUnbounded(){
+	//iterate through the columns and check each row to see if its negative
+	for(int col = 0; col < tableau->width(); col++){
+		//boolean to track if we've seen a positive number in a column
+		bool negativeCol = true;
+
+		//go through the rows and check if the number is positive
+		for (int row = 0; row < tableau->height(); row++){
+			if ((*tableau)[row][col] >= 0.0){
+				//found a positive number, not a negative column, break out of for loop
+				negativeCol = false;
+				break;
+			}
+		}
+
+		//if we've gone through the entire column and negativeCol is still true,
+		//there were no positive numbers in the column, return true
+		if (negativeCol){
+			return true;
+		}
+	}
+
+	//went through all the columns, none were all negative
+	return false;
 
 }
 
 
 //check if top row of tableau is all positive
 bool Solver::check_if_done(){
+	//iterate through the top row
+	for (int col = 0; col < tableau->width(); col++){
+		//if the number is negative, return false
+		if ((*tableau)[0][col] < 0.0){
+			return false;
+		}
+	}
 
+	//didn't find any negative numbers, therefore they're all
+	//positive
+	return true;
 }

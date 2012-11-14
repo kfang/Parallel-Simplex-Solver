@@ -6,6 +6,7 @@
 #include <vector>
 #include "GridPos.cpp"
 #include "Tableau.cpp"
+#include "Solver.cpp"
 
 using namespace std;
 
@@ -202,6 +203,9 @@ int main() {
 	//print for sanity check
 	tableau.printMat();
 
-	//
+	Solver solver (&tableau);
+
+	cout << "unbounded? " << solver.isUnbounded() << '\n';
+	cout << "done? " << solver.check_if_done() << '\n';
 	return 0;
 }
