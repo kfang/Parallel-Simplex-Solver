@@ -27,11 +27,20 @@ for arr in data:
 	print arr
 
 # parse out data and store them into objects
-name = ''
-rows = []
-cols = []
-rhs = []
-bounds = []
-
 
 print 'NAME: ' + name
+def doName():
+	for line in data:
+		command = line[0]
+		if (command == "NAME"):
+			name = line[1]
+			break
+
+def doRows():
+	start = False
+	for line in data:
+		command = line[0]
+		if (start):
+			if (command == 'N')
+		if (command == "ROWS"):
+			start = True
