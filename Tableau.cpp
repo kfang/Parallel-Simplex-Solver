@@ -16,6 +16,7 @@ public:
 	void addCol();
 	void addCol(int);
 	double* operator [](int i){return matrix[i];};
+	void pivot(int, int);
 };
 
 Tableau::Tableau(int row, int col){
@@ -82,6 +83,24 @@ void Tableau::printMat(){
 		}
 		cout << '\n';
 	}
+}
+
+void Tableau::pivot(int p, int q) {
+	int j, k;
+	for (k = 0; k < cols; k++) {
+		matrix[p][k] = matrix[p][k] / matrix[p][q];
+	}
+	for (j = 0; j < rows; j++) {
+		for (k = 0; k < cols; k++) {
+			if (j != p && k != q) {
+				matrix[j][k] = matrix[j][k] - (matrix[p][k] * matrix[j][q]);
+			}
+		}
+	}
+	for (j = 0; j < rows; j++) {
+		matrix[j][q] = 0;
+	}
+	matrix[p][q] = 1;
 }
 
 //sequentially populate every cell
