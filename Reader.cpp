@@ -5,9 +5,30 @@
 #include <stdlib.h>
 #include <vector>
 #include "GridPos.cpp"
+#include "Tableau.cpp"
 
 using namespace std;
 
+
+void doSlack(Tableau* tableau){
+	//store old number of columns, will have to use
+	//this number to move the RHS column to the end
+	int oldColNum = tableau->width() - 1;
+
+	//add columns equals to the number of rows - 1 
+	tableau->addCol(tableau->height() - 1);
+
+	//move the RHS column to the end
+	tableau->swapCols(oldColNum, tableau->width() - 1);
+
+	//place in the swaps, starts at row=1, col=oldColNum
+	for (int row = 1; row < tableau->height(); row++){
+		(*tableau)[row][oldColNum + row - 1] = 1.0;
+	}
+
+	//you now have a standardized tableau matrix!
+
+}
 
 int main() {
 	ifstream file;
@@ -40,7 +61,7 @@ int main() {
 			} else if (s.compare("COLUMNS") == 0){
 				//do stuff for COLUMNS
 				getline(file, s);
-				while (s[0] == ' '){
+				while (s[0] == ' '){{
 					//get the column (variable name)
 					string colName = s.substr(4, 10);
 					//strip off whitespace at the end
@@ -85,8 +106,40 @@ int main() {
 						matrixPositions.push_back(pos2);
 					}
 					
-					getline(file, s);
+					getline(file, s);}
 
+				}
+			} else if (s.compare("RHS") == 0){
+				getline(file, s);
+				while (s[0] == ' '){
+					string rowName = s.substr(14, 10);
+					//strip off whitespace
+					size_t lastChar = rowName.find_last_not_of(" ");
+					if (lastChar != string::npos){
+						rowName.erase(lastChar+1);
+					}
+					//store the value
+					double val = atof (s.substr(24, 15).c_str());
+
+					//know what row it goes, have total number of columns
+					GridPos pos (rowMap[rowName], numCols - 1, val);
+					matrixPositions.push_back(pos);
+
+					//check for another value
+					if (s.length() > 40){
+						rowName = s.substr(39, 10);
+						//strip whitespace
+						lastChar = rowName.find_last_not_of(" ");
+						if (lastChar != string::npos){
+							rowName.erase(lastChar+1);
+						}
+						//get the value
+						val = atof (s.substr(50, 15).c_str());
+						GridPos pos2 (rowMap[rowName], numCols -1, val);
+						matrixPositions.push_back(pos2);
+					}
+
+					getline(file, s);
 				}
 			} else {
 				getline(file, s);
@@ -95,8 +148,29 @@ int main() {
 	}
 	file.close();
 	
+	//-------------------------------------------
+	//   CHANGING FREE VARIABLES NOT IMPLEMENTED
+	//-------------------------------------------
+
+
+	//Create the tableau object and populate it from the list of values created while
+	//parsing the MPS file
+	Tableau tableau (numRows, numCols);
 	for (int i = 0; i < matrixPositions.size(); i++){
-		cout << matrixPositions[i].row << '\t' << matrixPositions[i].col << '\n';
+		tableau[matrixPositions[i].row][matrixPositions[i].col] = matrixPositions[i].val;
 	}
+
+	//fill in slack variables, we pass in the address since we want to actually modify
+	//stuff in it at the address.
+	doSlack (&tableau);
+
+	//-------------------------------------------
+	// ONCE ALL DATA IS IN TABLEAU, SHOULD CLEAN UP VARS
+	// FROM READING IN FILE
+	//-------------------------------------------
+	//print for sanity check
+	tableau.printMat();
+
+	//
 	return 0;
 }

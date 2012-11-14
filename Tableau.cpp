@@ -7,10 +7,15 @@ class Tableau {
 	int cols;
 public:
 	Tableau (int, int);
+	int height(){return rows;};
+	int width(){return cols;};
 	void printMat();
 	void testPopulate();
 	void addRow();
 	void swapCols(int, int);
+	void addCol();
+	void addCol(int);
+	double* operator [](int i){return matrix[i];};
 };
 
 Tableau::Tableau(int row, int col){
@@ -19,7 +24,7 @@ Tableau::Tableau(int row, int col){
 	matrix = new double*[rows];
 
 	for (int i = 0; i < rows; i++){
-		matrix[i] = new double[cols];
+		matrix[i] = new double[cols]();
 	}
 }
 
@@ -27,7 +32,7 @@ void Tableau::addRow(){
 	//create a new matrix and copy the values over
 	double** tempMat = new double*[rows + 1];
 	for (int i = 0; i < rows; i++){
-		tempMat[i] = new double[cols];
+		tempMat[i] = new double[cols]();
 		for(int j = 0; j < cols; j++){
 			tempMat[i][j] = matrix[i][j];
 		}
@@ -41,6 +46,23 @@ void Tableau::addRow(){
 	rows++;
 	delete[] matrix;
 	matrix = tempMat;
+}
+
+void Tableau::addCol(){
+	addCol(1);
+}
+
+void Tableau::addCol(int addNum){
+	//iterate down the rows of the matrix, adding colums
+	for (int i = 0; i < rows; i++){
+		double *tempMat = new double[cols + addNum]();
+		for (int j = 0; j < cols; j++){
+			tempMat[j] = matrix[i][j];
+		}
+		delete[] matrix[i];
+		matrix[i] = tempMat;
+	}
+	cols += addNum;
 }
 
 void Tableau::swapCols(int a, int b){
@@ -71,20 +93,4 @@ void Tableau::testPopulate(){
 			counter ++;
 		}
 	}
-}
-
-int main() {
-	Tableau* a = new Tableau(2, 20);
-	a->testPopulate();
-	a->printMat();
-	cout << '\n';
-	a->addRow();
-	a->printMat();
-	cout << '\n';
-	a->addRow();
-	a->printMat();
-	cout << '\n';
-	a->swapCols(0, 3);
-	a->printMat();
-	return 0;
 }
