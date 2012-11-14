@@ -1,7 +1,4 @@
 #include <iostream>
-#include <string>
-#include <map>
-#include <list>
 #include <stdlib.h>
 #include <vector>
 #include "GridPos.cpp"
@@ -16,7 +13,7 @@ public:
 	void solve();
 	vector<int> possible_incoming();
 	int select_incoming(vector<int>);
-	int select_outgoing();
+	int select_outgoing(int);
 	bool isUnbounded();
 	void pivot(int, int);
 	bool check_if_done();
@@ -25,7 +22,7 @@ public:
 void Solver::solve() {
 	while(!check_if_done()) {
 		int incoming = select_incoming(possible_incoming());
-		int outgoing = select_outgoing();
+		int outgoing = select_outgoing(incoming);
 		if (isUnbounded()) {
 			break;
 		}
@@ -48,8 +45,23 @@ int Solver::select_incoming(vector<int> possible_incoming){
 }
 
 
-int Solver::select_outgoing(){
-
+int Solver::select_outgoing(int incoming){
+	int* current_basis = tableau.get_current_basis;
+	int rows = tableau.height() - 1;
+	int cols = tableau.cols();
+	double* row = tableau[current_basis[0]];
+	double current_val = row[cols] / row[incoming];
+	double min = current_val;
+	int outgoing = current_basis[0];
+	for (int i = 1; i < rows; i++) {
+		row = tableau[current_basis[i]];
+		current_val = row[cols] / row[incoming];
+		if (current_val < min) {
+			min = current_val;
+			outgoing = current_basis[i];
+		}
+	}
+	return outgoing;
 }
 
 

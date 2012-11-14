@@ -5,6 +5,7 @@ class Tableau {
 	double** matrix;
 	int rows;
 	int cols;
+	int* current_basis;
 public:
 	Tableau (int, int);
 	int height(){return rows;};
@@ -17,6 +18,7 @@ public:
 	void addCol(int);
 	double* operator [](int i){return matrix[i];};
 	void pivot(int, int);
+	int* get_current_basis();
 };
 
 Tableau::Tableau(int row, int col){
@@ -27,6 +29,7 @@ Tableau::Tableau(int row, int col){
 	for (int i = 0; i < rows; i++){
 		matrix[i] = new double[cols]();
 	}
+	current_basis = new int[rows-1];
 }
 
 void Tableau::addRow(){
@@ -87,9 +90,11 @@ void Tableau::printMat(){
 
 void Tableau::pivot(int p, int q) {
 	int j, k;
+	// Calculate the values in the pth row.
 	for (k = 0; k < cols; k++) {
 		matrix[p][k] = matrix[p][k] / matrix[p][q];
 	}
+	// Calculate the values for all elements not in p or q
 	for (j = 0; j < rows; j++) {
 		for (k = 0; k < cols; k++) {
 			if (j != p && k != q) {
@@ -97,10 +102,18 @@ void Tableau::pivot(int p, int q) {
 			}
 		}
 	}
+	// Set the qth column to 0 also change the current basis
 	for (j = 0; j < rows; j++) {
 		matrix[j][q] = 0;
+		if (current_basis[j] == q) {
+			current_basis[j] = p;
+		}
 	}
 	matrix[p][q] = 1;
+}
+
+int* Tableau::get_current_basis() {
+	return current_basis;
 }
 
 //sequentially populate every cell
