@@ -27,7 +27,6 @@ void doSlack(Tableau* tableau){
 	}
 
 	//you now have a standardized tableau matrix!
-
 }
 
 int main() {
