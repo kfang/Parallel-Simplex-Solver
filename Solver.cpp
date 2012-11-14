@@ -33,3 +33,7 @@ void Solver::solve() {
 	}
 	// Don't actually know what we are going to return here
 }
+
+void Solver::pivot(int incoming, int outgoing) {
+	tableau.pivot(incoming, outgoing);
+}
