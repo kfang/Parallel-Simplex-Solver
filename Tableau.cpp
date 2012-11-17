@@ -19,6 +19,13 @@ public:
 	double* operator [](int i){return matrix[i];};
 	void pivot(int, int);
 	int* get_current_basis();
+
+	int* get_candidate_cols(int *current_basis, int numVars);
+	bool getFeasibleIncoming(int* candidates, int* current_basis);
+	double* makeUnitVector(double* vector);
+	bool isLinIndependent(double* vect1, double* vect2);
+	bool makesNegativeSoln(double* sample_basis, double* b_vect);
+
 };
 
 Tableau::Tableau(int row, int col){
@@ -125,4 +132,99 @@ void Tableau::testPopulate(){
 			counter ++;
 		}
 	}
+}
+
+int* Tableau::get_candidate_cols(int *current_basis, int numVars){
+
+	// how many variables aren't already within the current basis?
+	int *candidates = (int*) malloc(numVars*sizeof(int)-sizeof(*current_basis));
+
+	int j=0;
+	int k=0;
+
+	// check if a col is in current_basis or not.
+	for(int i=0;i<numVars; i++){
+		if((*current_basis+j)!=i){
+			*candidates+k=i;
+			k++;
+		}else{
+			j++;
+		}
+	}
+	return candidates;
+
+}
+
+
+
+double* Tableau::makeUnitVector(double* vector){
+
+	double norm=0;
+	int ln = sizeof vector/sizeof vector[0];
+
+	// get norm
+	for(int i=0; i<ln;i++){
+		double x=*(vector+i);
+		norm=norm+pow(x,2);
+	}
+
+	norm=pow(norm,(1/2));
+	//make space for unit array
+	double *unit = malloc(ln*sizeof(double));
+
+	for(int j=0; j<ln;j++){
+		*(unit+j)=*(vector+j)/norm;
+	}
+
+	return unit;
+}
+
+bool Tableau::isLinIndependent(double* vect1, double* vect2){
+	int ln = sizeof vect1/sizeof vect1[0];
+	bool match=true;
+
+	//check for match
+	for(int i=0;i<ln;i++){
+		match=match&&(*(vect1+i)!=*(vect2+i));
+	}
+
+	return match;
+}
+
+// b_vect is the last column of the matrix minus the first element
+bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
+
+
+	// define invBase:=get inverted form <- BLAS
+
+	// calculate matrix-vector product invBase*b_vect <- maybe BLAS
+
+	// return: does product have negative elements?
+
+	return false;
+}
+
+bool Tableau::getFeasibleIncoming(int* candidates, int* current_basis){
+
+	// (cont) means 'previous comment line continues here'
+	//
+	// define & malloc int* inFeasible
+	// define & malloc int* outFeasible
+	// for each outCol in current_basis
+	// define double* sub_basis:= current_basis without outCol
+	// 		for each inCol in candidates
+	//			for each baseCol in sub_basis
+	//				define bool indep: =accumulate (logical add)
+	//				(cont)check isLinIndepenedent(baseCol, inCol)
+	// 			if indep then
+	// 				create sample_basis:=sub_basis with inCol
+	//				define bool nonNegative: = check
+	//  			(cont)makesNegativeSoln(sample_basis)
+	// 			if nonNegative then
+	//				add to inFeasible inCol
+	//				add to outFeasible outCol
+	// if inFeasible is not empty
+	// 		return true
+
+	return false;
 }
