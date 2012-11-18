@@ -6,6 +6,14 @@ class Tableau {
 	int rows;
 	int cols;
 	int* current_basis;
+
+	//*****************************************************************************
+	// these three are for getFeasibleIncoming. see function description for details
+	int* feasibles[2];  // pointer to inFeasible and outFeasible pointers
+	int* inFeasible;
+	int* outFeasible;
+	//*****************************************************************************
+
 public:
 	Tableau (int, int);
 	int height(){return rows;};
@@ -134,6 +142,13 @@ void Tableau::testPopulate(){
 	}
 }
 
+/* Function: get_candidate_cols
+ * Input: int *current_basis - the pointer to the current basis
+ *        int numVars - the number of total columns
+ *
+ * Explanation: This simply determines the columns within the non-base set
+ */
+
 int* Tableau::get_candidate_cols(int *current_basis, int numVars){
 
 	// how many variables aren't already within the current basis?
@@ -156,7 +171,10 @@ int* Tableau::get_candidate_cols(int *current_basis, int numVars){
 }
 
 
-
+/* Function: makeUnitVector
+ * Input: A vector
+ * Output: A unit vector based upon the input vector
+ */
 double* Tableau::makeUnitVector(double* vector){
 
 	double norm=0;
@@ -179,13 +197,20 @@ double* Tableau::makeUnitVector(double* vector){
 	return unit;
 }
 
+/* Function: isLinIndepenedent
+ * Input: two vectors of equal length (not necessarily normalized)
+ * Output: boolean that indicates if the two vectors are linearly independent
+ */
 bool Tableau::isLinIndependent(double* vect1, double* vect2){
 	int ln = sizeof vect1/sizeof vect1[0];
 	bool match=true;
 
+	double* uv1= makeUnitVector(vect1);
+	double* uv2= makeUnitVector(vect2);
+
 	//check for match
 	for(int i=0;i<ln;i++){
-		match=match&&(*(vect1+i)!=*(vect2+i));
+		match=match&&(*(uv1+i)!=*(uv2+i));
 	}
 
 	return match;
@@ -195,36 +220,74 @@ bool Tableau::isLinIndependent(double* vect1, double* vect2){
 bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
 
 
-	// define invBase:=get inverted form <- BLAS
-
-	// calculate matrix-vector product invBase*b_vect <- maybe BLAS
-
+	// define invBase:=get inverted form <- ACML
+	// calculate matrix-vector product invBase*b_vect <- maybe ACML
 	// return: does product have negative elements?
 
 	return false;
 }
 
-bool Tableau::getFeasibleIncoming(int* candidates, int* current_basis){
+/* Function: getFeasibleIncoming
+ * Input: candidates - pointer to a list of non-basis columns
+ *        current_basis - pointer to the list of columns currently in the basis
+ *        feasibles - pointer to an array of two int pointers
+ *        	1. pointer[0] is new incoming set
+ *          2. pointer[1] is new outgoing set
+ * Output: a pointer to an updated array of two int pointers
+ *
+ * Explanation:
+ * While the motivation behind this function is to produce a subset of incoming columns
+ * in truth, the incoming and outgoing columns are coupled. This function populates two arrays, inFeasible and outFeasible. The reasoning
+ * behind this can be found within what we need from our incoming column. We want a column that
+ * is not linearly dependent with any of the columns left within a previous base that has had a
+ * single column removed. This means that even if we find such a linearly independent incoming
+ * column, it might not have been linearly independent if we had left the outgoing column
+ * within the base. In other words the knowledge of our incoming and outgoing columns
+ * is a joint property of the two columns. Chances are this will not often be a problem
+ * but it can occur.
+ *
+ * NOTE: The result is that when we select an incoming column, we will also have a subset
+ *       of outgoing choices from which to choose, possibly smaller than the base.
+ *
+ */
+int* Tableau::getFeasibleIncoming(int* candidates, int* current_basis, int* feasibles){
 
-	// (cont) means 'previous comment line continues here'
-	//
+	int ln = sizeof current_basis/sizeof current_basis[0];
+	int lnc = sizeof candidates/sizeof cadidates[0];
+
 	// define & malloc int* inFeasible
-	// define & malloc int* outFeasible
-	// for each outCol in current_basis
-	// define double* sub_basis:= current_basis without outCol
-	// 		for each inCol in candidates
-	//			for each baseCol in sub_basis
-	//				define bool indep: =accumulate (logical add)
-	//				(cont)check isLinIndepenedent(baseCol, inCol)
-	// 			if indep then
-	// 				create sample_basis:=sub_basis with inCol
-	//				define bool nonNegative: = check
-	//  			(cont)makesNegativeSoln(sample_basis)
-	// 			if nonNegative then
-	//				add to inFeasible inCol
-	//				add to outFeasible outCol
-	// if inFeasible is not empty
-	// 		return true
+	int* inF=malloc();
 
-	return false;
+	// define & malloc int* outFeasible
+	int* outF=malloc();
+
+	// for each outCol in current_basis
+	for(int i=0;i<ln;i++){
+
+		for(int k=0;k<lnc;k++){
+
+			bool indep=true;
+
+			// define sub_basis:= current_basis without outCol
+			for(int j=0; j<ln; j++){
+				if(*(current_basis+i)!=*(current_basis+j)){
+					// Do I use Tableau or matrix here?
+					indep=indep&&isLinIndependent(getCol(i), getCol(j));//TODO: getCol
+				}
+			}
+
+			if(indep){
+				double* sample= makeSampleBase(current_basis, candidate+j, i);
+				if(!makesNegativeSoln(sample,getB(matrix))){//TODO: getB
+					//TODO:add to inFeasible inCol
+					//TODO:add to outFeasible outCol
+				}
+			}
+
+		}
+	}
+
+	return null;
 }
+
+
