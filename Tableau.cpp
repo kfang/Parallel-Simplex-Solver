@@ -33,6 +33,8 @@ public:
 	double* makeUnitVector(double* vector);
 	bool isLinIndependent(double* vect1, double* vect2);
 	bool makesNegativeSoln(double* sample_basis, double* b_vect);
+	double* getCol(int colNum);
+	double* getB();
 
 };
 
@@ -149,7 +151,9 @@ void Tableau::testPopulate(){
  * Explanation: This simply determines the columns within the non-base set
  */
 
-int* Tableau::get_candidate_cols(int *current_basis, int numVars){
+int* Tableau::get_candidate_cols(){
+
+	numVars=width()-1;
 
 	// how many variables aren't already within the current basis?
 	int *candidates = (int*) malloc(numVars*sizeof(int)-sizeof(*current_basis));
@@ -222,7 +226,7 @@ bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
 
 	// define invBase:=get inverted form <- ACML
 	// calculate matrix-vector product invBase*b_vect <- maybe ACML
-	// return: does product have negative elements?
+	// return: does product have at least one negative element?
 
 	return false;
 }
@@ -237,20 +241,21 @@ bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
  *
  * Explanation:
  * While the motivation behind this function is to produce a subset of incoming columns
- * in truth, the incoming and outgoing columns are coupled. This function populates two arrays, inFeasible and outFeasible. The reasoning
- * behind this can be found within what we need from our incoming column. We want a column that
- * is not linearly dependent with any of the columns left within a previous base that has had a
- * single column removed. This means that even if we find such a linearly independent incoming
- * column, it might not have been linearly independent if we had left the outgoing column
- * within the base. In other words the knowledge of our incoming and outgoing columns
- * is a joint property of the two columns. Chances are this will not often be a problem
- * but it can occur.
+ * in truth, the incoming and outgoing columns are coupled. This function populates two arrays,
+ * inFeasible and outFeasible. The reasoning behind this can be found within what we need from
+ * our incoming column. We want a column that is not linearly dependent with any of the columns
+ * left within a previous base that has had a single column removed. This means that even if we
+ * find such a linearly independent incoming column, it might not have been linearly independent
+ * if we had left the outgoing column within the base. In other words the knowledge of our
+ * incoming and outgoing columns is a joint property of the two columns. Chances are this will
+ * not often be a problem but it can occur.
  *
  * NOTE: The result is that when we select an incoming column, we will also have a subset
  *       of outgoing choices from which to choose, possibly smaller than the base.
  *
+ * NOTE2: This is definitely not the efficient way to implement this
  */
-int* Tableau::getFeasibleIncoming(int* candidates, int* current_basis, int* feasibles){
+int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 
 	int ln = sizeof current_basis/sizeof current_basis[0];
 	int lnc = sizeof candidates/sizeof cadidates[0];
@@ -271,16 +276,16 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* current_basis, int* feas
 			// define sub_basis:= current_basis without outCol
 			for(int j=0; j<ln; j++){
 				if(*(current_basis+i)!=*(current_basis+j)){
-					// Do I use Tableau or matrix here?
-					indep=indep&&isLinIndependent(getCol(i), getCol(j));//TODO: getCol
+
+					indep=indep&&isLinIndependent(getCol(i), getCol(j));
 				}
 			}
 
 			if(indep){
 				double* sample= makeSampleBase(current_basis, candidate+j, i);
-				if(!makesNegativeSoln(sample,getB(matrix))){//TODO: getB
-					//TODO:add to inFeasible inCol
-					//TODO:add to outFeasible outCol
+				if(!makesNegativeSoln(sample,getB(matrix))){
+					inF+counter=candidates+j;
+					outF+counter=current_basis+i;
 				}
 			}
 
@@ -290,4 +295,17 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* current_basis, int* feas
 	return null;
 }
 
+// assumes column numbers begin with 0
+double* Tableau::getCol(int colNum){
+	int ln = sizeof current_basis/sizeof current_basis[0];
 
+	double* col=malloc(ln*sizeof(double));
+	for(int i=0;i<ln;i++){
+		col+i=matrix[i][colNum];
+	}
+	return col;
+}
+
+double* Tableau::getB(){
+	return (getCol(width()-1))+1;
+}
