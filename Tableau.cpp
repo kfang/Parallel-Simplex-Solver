@@ -33,6 +33,7 @@ public:
 	double* makeUnitVector(double* vector);
 	bool isLinIndependent(double* vect1, double* vect2);
 	bool makesNegativeSoln(double* sample_basis, double* b_vect);
+	double* makeSampleBase(double* inCol, int outCol);
 	double* getCol(int colNum);
 	double* getB();
 
@@ -151,6 +152,7 @@ void Tableau::testPopulate(){
  * Explanation: This simply determines the columns within the non-base set
  */
 
+//TODO: Test
 int* Tableau::get_candidate_cols(){
 
 	numVars=width()-1;
@@ -174,7 +176,7 @@ int* Tableau::get_candidate_cols(){
 
 }
 
-
+//TODO: Test
 /* Function: makeUnitVector
  * Input: A vector
  * Output: A unit vector based upon the input vector
@@ -201,6 +203,7 @@ double* Tableau::makeUnitVector(double* vector){
 	return unit;
 }
 
+//TODO: Test
 /* Function: isLinIndepenedent
  * Input: two vectors of equal length (not necessarily normalized)
  * Output: boolean that indicates if the two vectors are linearly independent
@@ -220,10 +223,11 @@ bool Tableau::isLinIndependent(double* vect1, double* vect2){
 	return match;
 }
 
+
 // b_vect is the last column of the matrix minus the first element
 bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
 
-
+	//TODO: This whole function
 	// define invBase:=get inverted form <- ACML
 	// calculate matrix-vector product invBase*b_vect <- maybe ACML
 	// return: does product have at least one negative element?
@@ -231,6 +235,7 @@ bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
 	return false;
 }
 
+//TODO: check for completeness and test
 /* Function: getFeasibleIncoming
  * Input: candidates - pointer to a list of non-basis columns
  *        current_basis - pointer to the list of columns currently in the basis
@@ -282,7 +287,7 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 			}
 
 			if(indep){
-				double* sample= makeSampleBase(current_basis, candidate+j, i);//TODO: makeSampleBase
+				double* sample= makeSampleBase(candidate+j, i);
 				if(!makesNegativeSoln(sample,getB(matrix))){
 					inF+counter=candidates+j;
 					outF+counter=current_basis+i;
@@ -292,9 +297,14 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 		}
 	}
 
+	// ok what am I doing here? This isn't finished.
+	//TODO: check the necessity and correctness of this approach
+	inFeasible=inF;
+	outFeasible=outF;
 	return null;
 }
 
+// TODO: Test
 // assumes column numbers begin with 0
 double* Tableau::getCol(int colNum){
 	int ln = sizeof current_basis/sizeof current_basis[0];
@@ -308,4 +318,25 @@ double* Tableau::getCol(int colNum){
 
 double* Tableau::getB(){
 	return (getCol(width()-1))+1;
+}
+
+//TODO: check this against algorithm for correctness
+//TODO: check that cols and rows are correct
+double* Tableau::makeSampleBase(double* inCol, int outCol){
+
+	double* sample=malloc(sizeof(current_basis));
+	int ln = sizeof current_basis/sizeof current_basis[0];
+
+	for(int i=0;i<ln;i++){
+		for(int j=0;j<width()-1;j++){
+
+			if(i==outCol){
+				sample[i][j]=inCol[j];
+			}else{
+				sample[i][j]=currentBasis[i][j];
+			}
+
+		}
+	}
+	return sample;
 }
