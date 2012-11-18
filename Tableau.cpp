@@ -28,8 +28,8 @@ public:
 	void pivot(int, int);
 	int* get_current_basis();
 
-	int* get_candidate_cols(int *current_basis, int numVars);
-	bool getFeasibleIncoming(int* candidates, int* current_basis);
+	int* get_candidate_cols();
+	bool getFeasibleIncoming(int* candidates);
 	double* makeUnitVector(double* vector);
 	bool isLinIndependent(double* vect1, double* vect2);
 	bool makesNegativeSoln(double* sample_basis, double* b_vect);
@@ -253,7 +253,7 @@ bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
  * NOTE: The result is that when we select an incoming column, we will also have a subset
  *       of outgoing choices from which to choose, possibly smaller than the base.
  *
- * NOTE2: This is definitely not the efficient way to implement this
+ * NOTE2: This is definitely not the most efficient way to implement this
  */
 int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 
@@ -282,7 +282,7 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 			}
 
 			if(indep){
-				double* sample= makeSampleBase(current_basis, candidate+j, i);
+				double* sample= makeSampleBase(current_basis, candidate+j, i);//TODO: makeSampleBase
 				if(!makesNegativeSoln(sample,getB(matrix))){
 					inF+counter=candidates+j;
 					outF+counter=current_basis+i;
