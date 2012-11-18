@@ -1,4 +1,7 @@
 #include <iostream>
+#include <stdlib.h>
+#include <cmath>
+
 using namespace std;
 
 class Tableau {
@@ -6,6 +9,7 @@ class Tableau {
 	int rows;
 	int cols;
 	int* current_basis;
+	int* candidates;
 
 	//*****************************************************************************
 	// these three are for getFeasibleIncoming. see function description for details
@@ -155,10 +159,10 @@ void Tableau::testPopulate(){
 //TODO: Test
 int* Tableau::get_candidate_cols(){
 
-	numVars=width()-1;
+	int numVars=width()-1;
 
 	// how many variables aren't already within the current basis?
-	int *candidates = (int*) malloc(numVars*sizeof(int)-sizeof(*current_basis));
+	//int *candidates;// = (int*) malloc(numVars*sizeof(in;//t)-sizeof(*current_basis));
 
 	int j=0;
 	int k=0;
@@ -166,7 +170,7 @@ int* Tableau::get_candidate_cols(){
 	// check if a col is in current_basis or not.
 	for(int i=0;i<numVars; i++){
 		if((*current_basis+j)!=i){
-			*candidates+k=i;
+			candidates+k=i;
 			k++;
 		}else{
 			j++;
@@ -194,7 +198,7 @@ double* Tableau::makeUnitVector(double* vector){
 
 	norm=pow(norm,(1/2));
 	//make space for unit array
-	double *unit = malloc(ln*sizeof(double));
+	double *unit;// = malloc(ln*sizeof(double));
 
 	for(int j=0; j<ln;j++){
 		*(unit+j)=*(vector+j)/norm;
@@ -266,10 +270,10 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 	int lnc = sizeof candidates/sizeof cadidates[0];
 
 	// define & malloc int* inFeasible
-	int* inF=malloc();
+	int* inF;//=malloc();
 
 	// define & malloc int* outFeasible
-	int* outF=malloc();
+	int* outF;//=malloc();
 
 	// for each outCol in current_basis
 	for(int i=0;i<ln;i++){
@@ -306,10 +310,10 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 
 // TODO: Test
 // assumes column numbers begin with 0
-double* Tableau::getCol(int colNum){
+double Tableau::getCol(int colNum){
 	int ln = sizeof current_basis/sizeof current_basis[0];
 
-	double* col=malloc(ln*sizeof(double));
+	double col;//=malloc(ln*sizeof(double));
 	for(int i=0;i<ln;i++){
 		col+i=matrix[i][colNum];
 	}
@@ -324,7 +328,7 @@ double* Tableau::getB(){
 //TODO: check that cols and rows are correct
 double* Tableau::makeSampleBase(double* inCol, int outCol){
 
-	double* sample=malloc(sizeof(current_basis));
+	double* sample;//=malloc(sizeof(current_basis));
 	int ln = sizeof current_basis/sizeof current_basis[0];
 
 	for(int i=0;i<ln;i++){
