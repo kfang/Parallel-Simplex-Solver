@@ -14,6 +14,10 @@ int main(){
 	TableauTest tt=new TableauTest(true);
 	tt.printMat();
 	printf("\n width =%d, and height=%d\n\n", tt.width(), tt.height());
+
+	/*
+	 * Test get_candidate_cols
+	 */
 	int* cands=tt.get_candidate_cols();
 	int candSize=tt.width()-tt.height();
 
@@ -21,6 +25,9 @@ int main(){
 		printf("\n candidate #%d = %d\n\n",i,cands[i]);
 	}
 
+	/*
+	 * Test update_candidate_cols
+	 */
 	tt.update_candidate_cols(cands);
 	cands=tt.get_candidate_cols();
 
@@ -28,20 +35,47 @@ int main(){
 			printf("\n candidate #%d = %d\n\n",i,cands[i]);
 	}
 
+	/*
+	* Test makeUnitVector
+	*/
+
 	double* testVect=new double[7];
+	double* unitVect=new double[7];
 
 	for(int i=0;i< 7;i++){
 		testVect[i]=i+1;
+		unitVect[i]=0;
 	}
 
-	int ln = sizeof(*testVect)/sizeof(testVect[0]);
-	printf("\n testsize=%f", testVect[2]);
-
-	double* result=tt.makeUnitVector(testVect);
+	tt.makeUnitVector(testVect,unitVect);
 
 	for(int i=0; i<7; i++){
-			printf("\n new vector elem#%d = %f\n\n",i,result[0]+i);
+			printf("\n new vector elem#%d = %f\n\n",i,unitVect[i]);
 	}
+
+
+	double* testVect2=new double[7];
+
+	for(int i=0;i< 7;i++){
+		testVect2[i]=2*(i+1);
+	}
+
+	bool test1=tt.isLinIndependent(testVect, testVect2);
+	printf("\n test1 s/b false and is = %s\n\n",(test1)?"true":"false");
+
+	double* testVect3=new double[7];
+	for(int i=0;i< 7;i++){
+		if(i!=3){
+			testVect3[i]=2*(i+1);
+		}else{
+			testVect3[i]=11*(i);
+			printf("\n this val = %f\n", testVect3[i]);
+		}
+	}
+
+	bool test2=tt.isLinIndependent(testVect, testVect3);
+	printf("\n test2 s/b true and is = %s\n\n",(test2)?"true":"false");
+
 }
 
 

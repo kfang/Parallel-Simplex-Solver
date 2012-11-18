@@ -36,7 +36,7 @@ public:
 	int* get_candidate_cols();
 	void update_candidate_cols(int* oldcands);
 	bool getFeasibleIncoming(int* candidates);
-	double* makeUnitVector(double* vector);
+	void makeUnitVector(double* vector, double* unit);
 	bool isLinIndependent(double* vect1, double* vect2);
 	bool makesNegativeSoln(double* sample_basis, double* b_vect);
 	double* makeSampleBase(double* inCol, int outCol);
@@ -225,18 +225,11 @@ void Tableau::update_candidate_cols(int* oldcands){
 
 // Tested
 /* Function: makeUnitVector
- * Input: A vector
- * Output: A pointer to a unit vector.
+ * Input: A vector to be made unit, a pointer to an empty vector
+ * Output: no output, the unit vector gets filled with values
  *
- * Access output thusly:
- *
- * double* result=<Tableau obj>.makeUnitVector(testVect);
- *
- *	for(i = elements in vector){
- *		printf("\n new vector elem#%d = %f\n\n",i,result[0]+i);
- *	}
  */
-double* Tableau::makeUnitVector(double* vector){
+void Tableau::makeUnitVector(double* vector, double* unit){
 
 	double norm=0;
 
@@ -245,45 +238,54 @@ double* Tableau::makeUnitVector(double* vector){
 		double x=vector[i];
 		double y=pow(x,2);
 		norm=norm+y;
-		printf("\n x=%f, x^2=%f\n",x,y);
 	}
 
 	norm=sqrt(norm);
-	printf("\n norm=%f\n\n",norm);
-	double unit[cols-1];
 
 	for(int j=0; j<cols-1;j++){
 		unit[j]=(vector[j]/norm);
 	}
 
-	return &unit[0];
 }
 
-// TODO: Test
+// Tested
 /* Function: isLinIndepenedent
  * Input: two vectors of equal length (not necessarily normalized)
  * Output: boolean that indicates if the two vectors are linearly independent
  */
 bool Tableau::isLinIndependent(double* vect1, double* vect2){
-	int ln = sizeof vect1/sizeof vect1[0];
-	bool match=true;
+	int ln = cols-1;
+	bool noMatch=false;
 
-	double* uv1= makeUnitVector(vect1);
-	double* uv2= makeUnitVector(vect2);
+	double* uv1=new double[ln];
+	double* uv2=new double[ln];
+
+	for(int i=0;i< ln;i++){
+			uv1[i]=0;
+			uv2[i]=0;
+	}
+
+	makeUnitVector(vect1, uv1);
+	makeUnitVector(vect2, uv2);
 
 	//check for match
 	for(int i=0;i<ln;i++){
-		match=match&&(*(uv1+i)!=*(uv2+i));
+		printf("\n matching %f with %f\n",uv1[i], uv2[i]);
+		noMatch=noMatch||(uv1[i]!=uv2[i]);
+
 	}
 
-	return match;
+	free(uv1);
+	free(uv2);
+	return noMatch;
 }
 
 
+//TODO: This whole function: write and test
 // b_vect is the last column of the matrix minus the first element
 bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
 
-	//TODO: This whole function
+
 	// define invBase:=get inverted form <- ACML
 	// calculate matrix-vector product invBase*b_vect <- maybe ACML
 	// return: does product have at least one negative element?
