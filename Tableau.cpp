@@ -20,6 +20,7 @@ class Tableau {
 
 public:
 	Tableau (int, int);
+	Tableau (bool);
 	int height(){return rows;};
 	int width(){return cols;};
 	void printMat();
@@ -33,6 +34,7 @@ public:
 	int* get_current_basis();
 
 	int* get_candidate_cols();
+	void update_candidate_cols(int* oldcands);
 	bool getFeasibleIncoming(int* candidates);
 	double* makeUnitVector(double* vector);
 	bool isLinIndependent(double* vect1, double* vect2);
@@ -52,6 +54,46 @@ Tableau::Tableau(int row, int col){
 		matrix[i] = new double[cols]();
 	}
 	current_basis = new int[rows-1];
+}
+
+Tableau::Tableau(bool example){
+	if(example){
+
+			rows = 4;
+			cols = 8;
+			matrix = new double*[rows];
+
+			double rowset[][8]={{-5.0,-6.0,-9.0,-8.0, 0.0, 0.0, 0.0, 0.0},
+			{ 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 6.0},
+			{ 1.0, 2.0, 3.0, 1.0, 0.0, 1.0, 0.0, 5.0},
+			{ 1.0, 1.0, 2.0, 3.0, 0.0, 0.0, 1.0, 3.0}};
+
+			int cb[3]={5,6,7};
+
+			for (int i = 0; i < rows; i++){
+				matrix[i] = new double[cols]();//();
+			}
+
+			current_basis = new int[rows-1];
+
+			for(int i=0;i< rows-1;i++){
+				current_basis[i]=cb[i];
+			}
+
+			for (int i = 0; i < rows; i++){
+				for (int j = 0; j < cols; j++){
+					matrix[i][j]= rowset[i][j];
+				}
+			}
+
+			candidates=new int[cols-rows];
+			int c[4]={0,0,0,0};
+			int candSize=cols-rows;
+			for(int i=0;i< candSize;i++){
+				candidates[i]=c[i];
+			}
+
+		}
 }
 
 void Tableau::addRow(){
@@ -149,65 +191,75 @@ void Tableau::testPopulate(){
 	}
 }
 
-/* Function: get_candidate_cols
- * Input: int *current_basis - the pointer to the current basis
- *        int numVars - the number of total columns
+// just a get function
+int* Tableau::get_candidate_cols(){
+	return candidates;
+}
+
+// Tested
+/* Function: update_candidate_cols
+ * Input: address to old candidates
  *
  * Explanation: This simply determines the columns within the non-base set
  */
 
-//TODO: Test
-int* Tableau::get_candidate_cols(){
+void Tableau::update_candidate_cols(int* oldcands){
 
-	int numVars=width()-1;
-
-	// how many variables aren't already within the current basis?
-	//int *candidates;// = (int*) malloc(numVars*sizeof(in;//t)-sizeof(*current_basis));
+	int numVars=cols-1;
 
 	int j=0;
 	int k=0;
 
 	// check if a col is in current_basis or not.
 	for(int i=0;i<numVars; i++){
-		if((*current_basis+j)!=i){
-			candidates+k=i;
+		if(*(current_basis+j)!=i){
+			oldcands[k]=i;
 			k++;
 		}else{
+
 			j++;
 		}
 	}
-	return candidates;
 
 }
 
-//TODO: Test
+// Tested
 /* Function: makeUnitVector
  * Input: A vector
- * Output: A unit vector based upon the input vector
+ * Output: A pointer to a unit vector.
+ *
+ * Access output thusly:
+ *
+ * double* result=<Tableau obj>.makeUnitVector(testVect);
+ *
+ *	for(i = elements in vector){
+ *		printf("\n new vector elem#%d = %f\n\n",i,result[0]+i);
+ *	}
  */
 double* Tableau::makeUnitVector(double* vector){
 
 	double norm=0;
-	int ln = sizeof vector/sizeof vector[0];
 
 	// get norm
-	for(int i=0; i<ln;i++){
-		double x=*(vector+i);
-		norm=norm+pow(x,2);
+	for(int i=0; i<cols-1;i++){
+		double x=vector[i];
+		double y=pow(x,2);
+		norm=norm+y;
+		printf("\n x=%f, x^2=%f\n",x,y);
 	}
 
-	norm=pow(norm,(1/2));
-	//make space for unit array
-	double *unit;// = malloc(ln*sizeof(double));
+	norm=sqrt(norm);
+	printf("\n norm=%f\n\n",norm);
+	double unit[cols-1];
 
-	for(int j=0; j<ln;j++){
-		*(unit+j)=*(vector+j)/norm;
+	for(int j=0; j<cols-1;j++){
+		unit[j]=(vector[j]/norm);
 	}
 
-	return unit;
+	return &unit[0];
 }
 
-//TODO: Test
+// TODO: Test
 /* Function: isLinIndepenedent
  * Input: two vectors of equal length (not necessarily normalized)
  * Output: boolean that indicates if the two vectors are linearly independent
