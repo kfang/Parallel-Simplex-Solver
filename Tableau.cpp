@@ -270,7 +270,7 @@ bool Tableau::isLinIndependent(double* vect1, double* vect2){
 
 	//check for match
 	for(int i=0;i<ln;i++){
-		printf("\n matching %f with %f\n",uv1[i], uv2[i]);
+
 		noMatch=noMatch||(uv1[i]!=uv2[i]);
 
 	}
@@ -367,7 +367,7 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 double Tableau::getCol(int colNum){
 	int ln = sizeof current_basis/sizeof current_basis[0];
 
-	double col;//=malloc(ln*sizeof(double));
+	double col;
 	for(int i=0;i<ln;i++){
 		col+i=matrix[i][colNum];
 	}
