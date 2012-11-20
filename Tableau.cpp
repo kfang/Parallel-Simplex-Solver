@@ -395,10 +395,9 @@ double* Tableau::getB(double* empty){
 
 //TODO: check this against algorithm for correctness
 //TODO: check that cols and rows are correct
-double* Tableau::makeSampleBase(double* inCol, int outCol){
+double* Tableau::makeSampleBase(double* inCol, int outCol, double* sample){
 
-	double* sample;//=malloc(sizeof(current_basis));
-	int ln = sizeof current_basis/sizeof current_basis[0];
+	int ln = cols-1;
 
 	for(int i=0;i<ln;i++){
 		for(int j=0;j<width()-1;j++){

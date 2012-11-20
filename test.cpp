@@ -99,6 +99,27 @@ int main(){
 	for(int i =0; i<tt.height()-1;i++){
 			printf("\n elem# %d= %f\n", i, testB[i]);
 		}
+
+
+	// test makeSampleBase
+
+	int rows = tt.height()-1;
+	double** sampBase = new double*[rows];
+
+	for (int i = 0; i < rows; i++){
+				sampBase[i] = new double[rows]();
+	}
+
+	for (int i = 0; i < rows; i++){
+			for (int j = 0; j < rows; j++){
+				sampBase[i][j]= 0;
+			}
+	}
+
+	double* sampCol= new double[rows];
+
+
+
 }
 
 

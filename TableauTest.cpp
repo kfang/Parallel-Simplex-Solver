@@ -36,6 +36,7 @@ public:
 	bool isLinIndependent(double* vect1, double* vect2);
 	double* getSlice(int lineNum, double* empty, bool transpose);
 	double* getB(double* empty);
+	double** makeSampleBase(double* inCol, int outCol, double** sample);
 
 };
 
@@ -55,7 +56,7 @@ TableauTest::TableauTest(bool example){
 		int cb[3]={5,6,7};
 
 		for (int i = 0; i < rows; i++){
-			matrix[i] = new double[cols]();//();
+			matrix[i] = new double[cols]();
 		}
 
 		current_basis = new int[rows-1];
@@ -201,4 +202,22 @@ double* TableauTest::getSlice(int lineNum, double* empty, bool transpose){
 // Gets the b vector (blue numbers on slide 14) used in the matrix-vector product A*b=x
 double* TableauTest::getB(double* empty){
 	return getSlice(cols-1, empty, false);
+}
+
+//TODO: check this against algorithm for correctness
+//TODO: check that cols and rows are correct
+double** TableauTest::makeSampleBase(double* inCol, int outCol, double** sample){
+
+	for(int i=1;i<rows-1;i++){
+		for(int j=0;j<rows-1;j++){
+
+			if(i==outCol){
+				sample[i][j]=inCol[j];
+			}else{
+				sample[i][j]=matrix[i][j];
+			}
+
+		}
+	}
+	return sample;
 }
