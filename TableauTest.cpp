@@ -34,6 +34,8 @@ public:
 	int* get_candidate_cols();
 	void makeUnitVector(double* vector, double* unit);
 	bool isLinIndependent(double* vect1, double* vect2);
+	double* getSlice(int lineNum, double* empty, bool transpose);
+	double* getB(double* empty);
 
 };
 
@@ -169,4 +171,34 @@ bool TableauTest::isLinIndependent(double* vect1, double* vect2){
 	free(uv1);
 	free(uv2);
 	return noMatch;
+}
+
+// Tested
+// Function: getSlice
+// Input: a value for row # (or col #), pointer to empty array of appropriate size, boolean
+//        indicating get row (or col respectively)
+// Output: pointer to populated array
+
+double* TableauTest::getSlice(int lineNum, double* empty, bool transpose){
+	if(transpose){
+		int ln = cols-1;
+
+		for(int i=0;i<ln;i++){
+			empty[i]=matrix[lineNum][i];
+		}
+		return empty;
+	}
+
+	int ln=rows;
+
+	for(int i=1;i<ln;i++){
+				empty[i-1]=matrix[i][lineNum];
+	}
+	return empty;
+}
+
+// Tested
+// Gets the b vector (blue numbers on slide 14) used in the matrix-vector product A*b=x
+double* TableauTest::getB(double* empty){
+	return getSlice(cols-1, empty, false);
 }

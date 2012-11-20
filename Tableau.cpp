@@ -40,8 +40,8 @@ public:
 	bool isLinIndependent(double* vect1, double* vect2);
 	bool makesNegativeSoln(double* sample_basis, double* b_vect);
 	double* makeSampleBase(double* inCol, int outCol);
-	double* getCol(int colNum);
-	double* getB();
+	double* getSlice(int lineNum, double* empty, bool transpose);
+	double* getB(double* empty);
 
 };
 
@@ -362,21 +362,36 @@ int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
 	return null;
 }
 
-// TODO: Test
-// assumes column numbers begin with 0
-double Tableau::getCol(int colNum){
-	int ln = sizeof current_basis/sizeof current_basis[0];
+// Tested
+// Function: getSlice
+// Input: a value for row # (or col #), pointer to empty array of appropriate size, boolean
+//        indicating get row (or col respectively)
+// Output: pointer to populated array
 
-	double col;
-	for(int i=0;i<ln;i++){
-		col+i=matrix[i][colNum];
+double* Tableau::getSlice(int lineNum, double* empty, bool transpose){
+	if(transpose){
+		int ln = cols-1;
+
+		for(int i=0;i<ln;i++){
+			empty[i]=matrix[lineNum][i];
+		}
+		return empty;
 	}
-	return col;
+
+	int ln=rows;
+
+	for(int i=1;i<ln;i++){
+				empty[i-1]=matrix[i][lineNum];
+	}
+	return empty;
 }
 
-double* Tableau::getB(){
-	return (getCol(width()-1))+1;
+// Tested
+// Gets the b vector (blue numbers on slide 14) used in the matrix-vector product A*b=x
+double* Tableau::getB(double* empty){
+	return getSlice(cols-1, empty, false);
 }
+
 
 //TODO: check this against algorithm for correctness
 //TODO: check that cols and rows are correct

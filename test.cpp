@@ -53,7 +53,7 @@ int main(){
 			printf("\n new vector elem#%d = %f\n\n",i,unitVect[i]);
 	}
 
-
+	//test isLinIndependent
 	double* testVect2=new double[7];
 
 	for(int i=0;i< 7;i++){
@@ -76,6 +76,29 @@ int main(){
 	bool test2=tt.isLinIndependent(testVect, testVect3);
 	printf("\n test2 s/b true and is = %s\n\n",(test2)?"true":"false");
 
+	//test getSlice
+	double* emptyVect=new double[7];
+
+	for(int i=0;i< 7;i++){
+			emptyVect[i]=0;
+	}
+
+	double* testCol=tt.getSlice(2,emptyVect, true);
+
+	for(int i =0; i<tt.width()-1;i++){
+		printf("\n elem# %d= %f\n", i, testCol[i]);
+	}
+
+	//test getB
+
+	emptyVect=new double[3];
+
+	double* testB=tt.getB(emptyVect);
+
+	printf("\n");
+	for(int i =0; i<tt.height()-1;i++){
+			printf("\n elem# %d= %f\n", i, testB[i]);
+		}
 }
 
 
