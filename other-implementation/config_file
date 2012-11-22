@@ -1,0 +1,10 @@
+# This is a comment.
+
+solver = serial #omp cuda etc.
+problem_file_format = mps
+
+# Example options/settings.
+optimization1 = blah
+optimization2 = blah
+optimization3 = blah
+optimization4 = blah
