@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -35,6 +36,7 @@ public:
 
 	int* get_candidate_cols();
 	void update_candidate_cols(int* oldcands);
+	int select_candidate_col();
 
 
 };
@@ -217,3 +219,16 @@ void Tableau::update_candidate_cols(int* oldcands){
 
 }
 
+int Tableau::select_candidate_col(){
+
+	double min=numeric_limits<double>::max( );
+	int nextCol=0;
+
+	for(int i=0;i<cols;i++){
+		if(matrix[0][i]<min){
+			min=matrix[0][i];
+			nextCol=i;
+		}
+	}
+	return nextCol;
+}

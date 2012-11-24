@@ -101,22 +101,9 @@ int main(){
 		}
 
 
-	// test makeSampleBase
+	// test select_candidate_col
 
-	int rows = tt.height()-1;
-	double** sampBase = new double*[rows];
 
-	for (int i = 0; i < rows; i++){
-				sampBase[i] = new double[rows]();
-	}
-
-	for (int i = 0; i < rows; i++){
-			for (int j = 0; j < rows; j++){
-				sampBase[i][j]= 0;
-			}
-	}
-
-	double* sampCol= new double[rows];
 
 
 

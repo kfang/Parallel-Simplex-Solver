@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <cmath>
 #include <stdio.h>
+#include <limits>
 
 
 /*
@@ -37,6 +38,7 @@ public:
 	double* getSlice(int lineNum, double* empty, bool transpose);
 	double* getB(double* empty);
 	double** makeSampleBase(double* inCol, int outCol, double** sample);
+	int select_candidate_col();
 
 };
 
@@ -220,4 +222,18 @@ double** TableauTest::makeSampleBase(double* inCol, int outCol, double** sample)
 		}
 	}
 	return sample;
+}
+
+int TableauTest::select_candidate_col(){
+
+	double min=numeric_limits<double>::max( );
+	int nextCol=0;
+
+	for(int i=0;i<cols;i++){
+		if(matrix[0][i]<min){
+			min=matrix[0][i];
+			nextCol=i;
+		}
+	}
+	return nextCol;
 }
