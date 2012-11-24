@@ -45,7 +45,7 @@ test: $(TARGETS)
 
 .PHONY: graphs
 graphs:
-	@echo Not implemented yet,
+	@echo A graph constructing script has not implemented yet,
 
 .PHONY: clean
 clean:
@@ -56,4 +56,4 @@ clean:
 loc:
 	@echo 'Lines of Code for the Project'
 	@echo '-----------------------------'
-	@find . -regex '.+\.\(h\|\cpp\)' | grep -v boost | xargs wc -l
+	@find . -regex '.+\.\(h\|\cpp\)' | grep -v boost | xargs wc -l Makefile

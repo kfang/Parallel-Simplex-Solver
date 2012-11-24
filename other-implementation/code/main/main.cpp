@@ -18,17 +18,12 @@
 
 int main(int argc, char** argv)
 {
-
 	// Parse the command line to get the command line options and input files.
 	CMD_Line_Options cmd_line_opts = CMD_Line_Parser().parse(argc, argv);
-
-	cmd_line_opts.print();
 
 	// Parse the configuration file to get the configuration options.
 	const char* config_file = cmd_line_opts.config_file;
 	Configuration_Options config_opts = Configuration_Parser().parse(config_file);
-
-	config_opts.print();
 
 	// Create a solver using the specified options.
 	Simplex_Solver* solver = create_solver(config_opts);
@@ -42,10 +37,12 @@ int main(int argc, char** argv)
 		char* input_file = cmd_line_opts.input_files[i];
 		Simplex_Problem problem = input_file_parser->parse(input_file);
 
-/*
+		// TODO get rid of this print statement
+		problem.print();
 
 		// Find a solution to the problem.
 		Simplex_Solution solution = solver->solve(problem);
+/*
 
 		// Output the solution and statistics regarding how long it took to
 		// solve, number of iterations, etc.

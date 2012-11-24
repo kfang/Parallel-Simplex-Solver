@@ -100,12 +100,30 @@ void handle_col_line(const boost::cmatch& matched_line,
 	// Update the problem for the rows that were specified.
 	if (row1_specified) {
 		float coeff_val = atof(matched_line[3].str().c_str());
-		problem_instance.set_constraint_coeff(row1_name, col_name, coeff_val);
+
+		// The line is modifying an entry in the obj function.
+		if (problem_instance.is_obj_func(row1_name)) {
+			problem_instance.set_obj_coeff(col_name, coeff_val);
+		}
+
+		// The line is modifying an entry in some constraint.
+		else {
+			problem_instance.set_constraint_coeff(row1_name, col_name, coeff_val);
+		}
 	}
 
 	if (row2_specified) {
 		float coeff_val = atof(matched_line[5].str().c_str());
-		problem_instance.set_constraint_coeff(row2_name, col_name, coeff_val);
+
+		// The line is modifying an entry in the obj function.
+		if (problem_instance.is_obj_func(row2_name)) {
+			problem_instance.set_obj_coeff(col_name, coeff_val);
+		}
+
+		// The line is modifying an entry in some constraint.
+		else {
+			problem_instance.set_constraint_coeff(row2_name, col_name, coeff_val);
+		}
 	}
 }
 
@@ -149,6 +167,7 @@ MPS_File_Parser::~MPS_File_Parser(void)
 
 Simplex_Problem MPS_File_Parser::parse(char* input_file_name)
 {
+
 	// Open the input file.
 	std::ifstream input_file(input_file_name);
 
