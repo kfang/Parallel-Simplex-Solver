@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -35,13 +36,8 @@ public:
 
 	int* get_candidate_cols();
 	void update_candidate_cols(int* oldcands);
-	bool getFeasibleIncoming(int* candidates);
-	void makeUnitVector(double* vector, double* unit);
-	bool isLinIndependent(double* vect1, double* vect2);
-	bool makesNegativeSoln(double* sample_basis, double* b_vect);
-	double* makeSampleBase(double* inCol, int outCol);
-	double* getSlice(int lineNum, double* empty, bool transpose);
-	double* getB(double* empty);
+	int select_candidate_col();
+
 
 };
 
@@ -223,192 +219,16 @@ void Tableau::update_candidate_cols(int* oldcands){
 
 }
 
-// Tested
-/* Function: makeUnitVector
- * Input: A vector to be made unit, a pointer to an empty vector
- * Output: no output, the unit vector gets filled with values
- *
- */
-void Tableau::makeUnitVector(double* vector, double* unit){
+int Tableau::select_candidate_col(){
 
-	double norm=0;
+	double min=numeric_limits<double>::max( );
+	int nextCol=0;
 
-	// get norm
-	for(int i=0; i<cols-1;i++){
-		double x=vector[i];
-		double y=pow(x,2);
-		norm=norm+y;
-	}
-
-	norm=sqrt(norm);
-
-	for(int j=0; j<cols-1;j++){
-		unit[j]=(vector[j]/norm);
-	}
-
-}
-
-// Tested
-/* Function: isLinIndepenedent
- * Input: two vectors of equal length (not necessarily normalized)
- * Output: boolean that indicates if the two vectors are linearly independent
- */
-bool Tableau::isLinIndependent(double* vect1, double* vect2){
-	int ln = cols-1;
-	bool noMatch=false;
-
-	double* uv1=new double[ln];
-	double* uv2=new double[ln];
-
-	for(int i=0;i< ln;i++){
-			uv1[i]=0;
-			uv2[i]=0;
-	}
-
-	makeUnitVector(vect1, uv1);
-	makeUnitVector(vect2, uv2);
-
-	//check for match
-	for(int i=0;i<ln;i++){
-
-		noMatch=noMatch||(uv1[i]!=uv2[i]);
-
-	}
-
-	free(uv1);
-	free(uv2);
-	return noMatch;
-}
-
-
-//TODO: This whole function: write and test
-// b_vect is the last column of the matrix minus the first element
-bool Tableau::makesNegativeSoln(double* sample_basis, double* b_vect){
-
-
-	// define invBase:=get inverted form <- ACML
-	// calculate matrix-vector product invBase*b_vect <- maybe ACML
-	// return: does product have at least one negative element?
-
-	return false;
-}
-
-//TODO: check for completeness and test
-/* Function: getFeasibleIncoming
- * Input: candidates - pointer to a list of non-basis columns
- *        current_basis - pointer to the list of columns currently in the basis
- *        feasibles - pointer to an array of two int pointers
- *        	1. pointer[0] is new incoming set
- *          2. pointer[1] is new outgoing set
- * Output: a pointer to an updated array of two int pointers
- *
- * Explanation:
- * While the motivation behind this function is to produce a subset of incoming columns
- * in truth, the incoming and outgoing columns are coupled. This function populates two arrays,
- * inFeasible and outFeasible. The reasoning behind this can be found within what we need from
- * our incoming column. We want a column that is not linearly dependent with any of the columns
- * left within a previous base that has had a single column removed. This means that even if we
- * find such a linearly independent incoming column, it might not have been linearly independent
- * if we had left the outgoing column within the base. In other words the knowledge of our
- * incoming and outgoing columns is a joint property of the two columns. Chances are this will
- * not often be a problem but it can occur.
- *
- * NOTE: The result is that when we select an incoming column, we will also have a subset
- *       of outgoing choices from which to choose, possibly smaller than the base.
- *
- * NOTE2: This is definitely not the most efficient way to implement this
- */
-int* Tableau::getFeasibleIncoming(int* candidates, int* feasibles){
-
-	int ln = sizeof current_basis/sizeof current_basis[0];
-	int lnc = sizeof candidates/sizeof cadidates[0];
-
-	// define & malloc int* inFeasible
-	int* inF;//=malloc();
-
-	// define & malloc int* outFeasible
-	int* outF;//=malloc();
-
-	// for each outCol in current_basis
-	for(int i=0;i<ln;i++){
-
-		for(int k=0;k<lnc;k++){
-
-			bool indep=true;
-
-			// define sub_basis:= current_basis without outCol
-			for(int j=0; j<ln; j++){
-				if(*(current_basis+i)!=*(current_basis+j)){
-
-					indep=indep&&isLinIndependent(getCol(i), getCol(j));
-				}
-			}
-
-			if(indep){
-				double* sample= makeSampleBase(candidate+j, i);
-				if(!makesNegativeSoln(sample,getB(matrix))){
-					inF+counter=candidates+j;
-					outF+counter=current_basis+i;
-				}
-			}
-
+	for(int i=0;i<cols;i++){
+		if(matrix[0][i]<min){
+			min=matrix[0][i];
+			nextCol=i;
 		}
 	}
-
-	// ok what am I doing here? This isn't finished.
-	//TODO: check the necessity and correctness of this approach
-	inFeasible=inF;
-	outFeasible=outF;
-	return null;
-}
-
-// Tested
-// Function: getSlice
-// Input: a value for row # (or col #), pointer to empty array of appropriate size, boolean
-//        indicating get row (or col respectively)
-// Output: pointer to populated array
-
-double* Tableau::getSlice(int lineNum, double* empty, bool transpose){
-	if(transpose){
-		int ln = cols-1;
-
-		for(int i=0;i<ln;i++){
-			empty[i]=matrix[lineNum][i];
-		}
-		return empty;
-	}
-
-	int ln=rows;
-
-	for(int i=1;i<ln;i++){
-				empty[i-1]=matrix[i][lineNum];
-	}
-	return empty;
-}
-
-// Tested
-// Gets the b vector (blue numbers on slide 14) used in the matrix-vector product A*b=x
-double* Tableau::getB(double* empty){
-	return getSlice(cols-1, empty, false);
-}
-
-
-//TODO: check this against algorithm for correctness
-//TODO: check that cols and rows are correct
-double* Tableau::makeSampleBase(double* inCol, int outCol, double* sample){
-
-	int ln = cols-1;
-
-	for(int i=0;i<ln;i++){
-		for(int j=0;j<width()-1;j++){
-
-			if(i==outCol){
-				sample[i][j]=inCol[j];
-			}else{
-				sample[i][j]=currentBasis[i][j];
-			}
-
-		}
-	}
-	return sample;
+	return nextCol;
 }
