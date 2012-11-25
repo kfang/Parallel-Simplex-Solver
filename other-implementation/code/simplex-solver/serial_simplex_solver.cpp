@@ -44,13 +44,13 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	for (;;) {
 		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
+		if (pivot_col >= num_cols-1) {
+			break;
+		}
 		if (pivot_row >= num_rows) {
 			//Then unbounded
 			std::cout << "The problem is unbounded\n";
 			return Simplex_Solution();
-		}
-		if (pivot_col >= num_cols-1) {
-			break;
 		}
 		for (int i = pivot_row+1; i < num_rows; i++)
 			if (tableau[i][pivot_col] > 0)
