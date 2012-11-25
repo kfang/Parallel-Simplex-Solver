@@ -233,7 +233,6 @@ Simplex_Problem MPS_File_Parser::parse(char* input_file_name)
 	std::string next_line;
 	boost::cmatch matches;
 	while(std::getline(input_file, next_line) && curr_state != DONE) {
-		std::cout << "On line: " << line_num << std::endl;
 		// Check if it is a blank line.
 		if (boost::regex_match(next_line.c_str(),
 		                       matches,
