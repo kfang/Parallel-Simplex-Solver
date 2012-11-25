@@ -49,20 +49,6 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 			if (tableau[i][pivot_col] > 0)
 				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
 					pivot_row = i;
-		// Check for unboundedness
-		for (int i = 0; i < num_cols; i++) {
-			for (int j = 0; j < num_rows; j++) {
-				if (tableau[j][i] < 0) {
-					if (j == num_rows-1) {
-						//Then unbounded
-						std::cout << "The problem is unbounded\n";
-						return Simplex_Solution();
-					}
-				} else {
-					break;
-				}
-			}
-		}
 		std::cout << "---------------------------------" << std::endl;
 		std::cout << "BEFORE PIVOT" << std::endl;
 		print_matrix(num_rows, num_cols, tableau);
