@@ -27,13 +27,11 @@ Serial_Simplex_Solver::~Serial_Simplex_Solver(void)
 
 Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 {
-	std::cout << "Before create\n";
 	// Make a new tableau for solving the problem.
 	float** tableau = create_tableau(problem);
-	std::cout << "Before getting num vars\n";
+
 	// Get the number of variables and constraints in the problem.
 	int num_variables = problem.get_num_variables();
-	std::cout << "before gtting num constrants\n";
 	int num_constraints = problem.get_num_constraints();
 
 	// Calculate the number of rows and columns in the tableau and allocate memory.
@@ -42,13 +40,10 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
-	std::cout << "Starting prob\n";
 	int pivot_col, pivot_row;
 	for (;;) {
 		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
-		std::cout << "Picked col\n";
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
-		std::cout << "Picked row\n";
 		if (pivot_col >= num_cols-1) {
 			break;
 		}
