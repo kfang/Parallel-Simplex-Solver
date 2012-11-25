@@ -44,7 +44,11 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	for (;;) {
 		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
-		if (pivot_row >= num_rows || pivot_col >= num_cols-1) break;
+		if (pivot_row >= num_rows || pivot_col >= num_cols-1) {
+			std::cout << "pivot_row: " << pivot_row << std::endl;
+			std::cout << "pivot_col: " << pivot_col << std::endl;
+			break;
+		}
 		for (int i = pivot_row+1; i < num_rows; i++)
 			if (tableau[i][pivot_col] > 0)
 				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
