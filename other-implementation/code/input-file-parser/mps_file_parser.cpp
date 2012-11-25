@@ -31,7 +31,7 @@ const boost::regex row_line("\\s*(E|L|G|N)\\s*(\\w+)\\s*");
 const boost::regex col_start("\\s*COLUMNS\\s*");
 const boost::regex col_line("\\s*(\\w+)(?:\\s+(\\w+)\\s+([0-9.+-eE]+)(?:\\s+(\\w+)\\s+([0-9.+-eE]+))?)?\\s*");
 const boost::regex rhs_start("\\s*RHS\\s*");
-const boost::regex rhs_line("\\s*(\\w+)\\s+(\\w+)\\s+([0-9.+-eE]+)(\\s+(\\w+)\\s+([0-9.+-eE]+))?\\s*");
+const boost::regex rhs_line("\\s*(\\w+)\\s+(\\w+)\\s+([0-9.+-eE]+)(?:\\s+(\\w+)\\s+([0-9.+-eE]+))?\\s*");
 const boost::regex bounds_start("\\s*BOUNDS\\s*");
 const boost::regex bounds_line("\\s*(UP|LO|FX|FR)\\s*(\\w+)\\s*(\\w+)\\s*([0-9.+-eE]+)\\s*");
 const boost::regex end_data("\\s*ENDATA\\s*");
@@ -147,6 +147,8 @@ void handle_rhs_line(const boost::cmatch& matched_line,
 	// This contains the name of the second row if it was specified.
 	std::string row2_name = matched_line[4].str();
 	bool row2_specified = row2_name != "";
+	std::cout << "Row 2: " << row2_name << std::endl;
+	std::cout << "specified: " << row2_specified << std::endl;
 
 	// Set the right hand side entry for the second row if needed.
 	if (row2_specified) {
@@ -167,10 +169,6 @@ void handle_bounds_line(const boost::cmatch& matched_line,
 	std::stringstream ss;
 	ss << "bound" << line_num;
 	std::string bound_name = ss.str();
-	std::cout << "Type: " << type << std::endl;
-	std::cout << "Col_name: " << col_name << std::endl;
-	std::cout << "Val: " << val << std::endl;
-	std::cout << "bound_name: " << bound_name << std::endl;
 
 	// This is an equality constraint.
 	if (type == "LO") {
