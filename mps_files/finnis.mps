@@ -1,4 +1,4 @@
-NAME          FINNIS   (PTABLES3)
+NAME          FINNIS
 ROWS
  N  PRICER
  G  1BALHCO
