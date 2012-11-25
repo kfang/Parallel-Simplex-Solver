@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include "mps_file_parser.h"
 #include "simplex_problem.h"
+#include <sstream>
 
 //--------------------------------------------------------------------------
 // DEFINITIONS
@@ -19,6 +20,7 @@ enum state { EXPECTING_NAME,
              IN_ROWS_SECTION,
              IN_COLUMNS_SECTION,
              IN_RHS_SECTION,
+             IN_BOUNDS_SECTION,
              DONE };
 
 // Regex for the line types in the mps file format.
@@ -30,6 +32,8 @@ const boost::regex col_start("\\s*COLUMNS\\s*");
 const boost::regex col_line("\\s*(\\w+)(?:\\s+(\\w+)\\s+([0-9.+-eE]+)(?:\\s+(\\w+)\\s+([0-9.+-eE]+))?)?\\s*");
 const boost::regex rhs_start("\\s*RHS\\s*");
 const boost::regex rhs_line("\\s*(\\w+)\\s+(\\w+)\\s+([0-9.+-eE]+)(?:\\s+(\\w+)\\s+([0-9.+-eE]+))?\\s*");
+const boost::regex bounds_start("\\s*RHS\\s*");
+const boost::regex bounds_line("\\s*(UP|LO|FX|FR)\\s*(\\w+)\\s*(\\w+)\\s*([0-9.+-eE]+)\\s*");
 const boost::regex end_data("\\s*ENDATA\\s*");
 
 //--------------------------------------------------------------------------
@@ -150,6 +154,55 @@ void handle_rhs_line(const boost::cmatch& matched_line,
 		problem_instance.set_constraint_rhs(row1_name, row1_val);
 	}
 }
+
+//--------------------------------------------------------------------------
+// HANDLE_BOUNDS_LINE
+
+void handle_bounds_line(const boost::cmatch& matched_line,
+                     Simplex_Problem& problem_instance, int line_num)
+{
+	std::string type = matched_line[1].str();
+	std::string col_name = matched_line[3].str();
+	float val = atof(matched_line[4].str().c_str());
+	std::stringstream ss;
+	ss << "bound" << line_num;
+	std::string bound_name = ss.str();
+
+	// This is an equality constraint.
+	if (type == "LO") {
+		problem_instance.add_constraint(bound_name, GEQ);
+		problem_instance.set_constraint_coeff(bound_name, col_name, 1.0);
+		problem_instance.set_constraint_rhs(bound_name, val);
+	}
+
+	// This is a less than equal to constraint.
+	else if (type == "UP") {
+		problem_instance.add_constraint(bound_name, LEQ);
+		problem_instance.set_constraint_coeff(bound_name, col_name, 1.0);
+		problem_instance.set_constraint_rhs(bound_name, val);
+	}
+
+	// This is a greater than equal to constraint.
+	else if (type == "FX") {
+		problem_instance.add_constraint(bound_name, EQ);
+		problem_instance.set_constraint_coeff(bound_name, col_name, 1.0);
+		problem_instance.set_constraint_rhs(bound_name, val);
+	}
+
+	// This is the objective function.
+	else if (type == "FR") {
+		//Don't do anything
+	}
+
+	// This is an invalid constraint type.
+	else {
+		std::cerr << "ERROR: Invalid constraint type -> "
+		          << type << std::endl;
+		exit(EXIT_FAILURE);
+	}
+}
+
+const boost::regex bounds_line("\\s*(UP|LO|FX|FR)\\s*(\\w+)\\s*(\\w+)\\s*([0-9.+-eE]+)\\s*");
 
 //--------------------------------------------------------------------------
 // CONSTRUCTOR AND DESTRUCTOR FOR MPS PARSER
@@ -297,6 +350,34 @@ Simplex_Problem MPS_File_Parser::parse(char* input_file_name)
 			}
 
 			handle_rhs_line(matches, problem_instance);
+		}
+
+		// Check if it is the start of the BOUNDS section.
+		else if (boost::regex_match(next_line.c_str(),
+		                            matches,
+		                            bounds_start))
+		{
+			if (curr_state != IN_RHS_SECTION) {
+				std::cerr << "ERROR: at line " << line_num << std::endl
+				          << next_line << std::endl;
+				exit(EXIT_FAILURE);
+			}
+
+			curr_state = IN_BOUNDS_SECTION;
+		}
+
+		// Check if it is in the BOUNDS line
+		else if (boost::regex_match(next_line.c_str(),
+									matches,
+									bounds_line))
+		{
+			if (curr_state != IN_BOUNDS_SECTION) {
+				std::cerr << "ERROR: at line " << line_num << std::endl
+				          << next_line << std::endl;
+				exit(EXIT_FAILURE);
+			}
+
+			handle_bounds_line(matches, problem_instance, line_num);
 		}
 
 		// This is an unrecognized line.  It might be part of the MPS
