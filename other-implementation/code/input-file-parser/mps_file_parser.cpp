@@ -202,8 +202,6 @@ void handle_bounds_line(const boost::cmatch& matched_line,
 	}
 }
 
-const boost::regex bounds_line("\\s*(UP|LO|FX|FR)\\s*(\\w+)\\s*(\\w+)\\s*([0-9.+-eE]+)\\s*");
-
 //--------------------------------------------------------------------------
 // CONSTRUCTOR AND DESTRUCTOR FOR MPS PARSER
 
