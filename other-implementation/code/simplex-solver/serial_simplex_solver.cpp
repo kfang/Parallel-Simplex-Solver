@@ -41,7 +41,6 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
 	int pivot_col, pivot_row;
-	print_matrix(num_rows,num_cols, tableau);
 	for (;;) {
 		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
@@ -60,10 +59,10 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 					pivot_row = i;
 		std::cout << "---------------------------------" << std::endl;
 		std::cout << "BEFORE PIVOT" << std::endl;
-		print_matrix(num_rows, num_cols, tableau);
+		//print_matrix(num_rows, num_cols, tableau);
 		std::cout << "pivot_row: " << pivot_row << std::endl;
 		std::cout << "pivot_col: " << pivot_col << std::endl;
-		std::cout << "AFTER PIVOT" << std::endl;
+		//std::cout << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
 		print_matrix(num_rows, num_cols, tableau);
 	}
