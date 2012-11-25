@@ -167,6 +167,10 @@ void handle_bounds_line(const boost::cmatch& matched_line,
 	std::stringstream ss;
 	ss << "bound" << line_num;
 	std::string bound_name = ss.str();
+	std::cout << "Type: " << type << std::endl;
+	std::cout << "Col_name: " << col_name << std::endl;
+	std::cout << "Val: " << val << std::endl;
+	std::cout << "bound_name: " << bound_name << std::endl;
 
 	// This is an equality constraint.
 	if (type == "LO") {
