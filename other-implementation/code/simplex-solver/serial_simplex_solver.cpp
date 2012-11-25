@@ -68,6 +68,7 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	}
 
 	std::cout << "DONE!!!" << std::endl;
+	std::cout << "Max value: " << tableau[num_rows][num_cols] << std::endl;
 
 	return Simplex_Solution();
 }
