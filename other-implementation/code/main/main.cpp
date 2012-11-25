@@ -27,16 +27,17 @@ int main(int argc, char** argv)
 
 	// Create a solver using the specified options.
 	Simplex_Solver* solver = create_solver(config_opts);
-
+	std::cout << "Before input\n";
 	// Create an input file parser using the specified options.
 	Input_File_Parser* input_file_parser = create_input_file_parser(config_opts);
-
+	std::cout << "after input\n";
 	// For each input file create a problem instance, and find a solution.
 	for (int i = 0; i < cmd_line_opts.input_files.size(); i++) {
 		// Parse the current input file and build a problem instance.
 		char* input_file = cmd_line_opts.input_files[i];
+		std::cout << "before prob\n";
 		Simplex_Problem problem = input_file_parser->parse(input_file);
-
+		std::cout << "after prob\n";
 		// TODO get rid of this print statement
 		problem.print();
 
