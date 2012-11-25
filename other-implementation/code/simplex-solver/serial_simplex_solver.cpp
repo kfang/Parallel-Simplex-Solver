@@ -40,12 +40,18 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
-	int pivot_col, pivot_row, x;
+	int pivot_col, pivot_row;
 	for (;;) {
-		x = rand();
-		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][(pivot_col + x) % (num_cols-1)] >= 0); pivot_col++);
+		float min_val = tableau[0][0];
+		pivot_col = 0;
+		for (int i = 0; (i < num_cols-1); i++){
+			if (tableau[0][i] < min_val) {
+				min_val = tableau[0][i];
+				pivot_col = i;
+			}
+		}
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
-		if (pivot_col >= num_cols-1) {
+		if (min_val >= 0) {
 			break;
 		}
 		if (pivot_row >= num_rows) {
@@ -53,7 +59,6 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 			std::cout << "The problem is unbounded\n";
 			return Simplex_Solution();
 		}
-		pivot_col = (pivot_col + x) % (num_cols-1);
 		std::cout << "Pivot value is: " << tableau[0][pivot_col] << std::endl;
 		for (int i = pivot_row+1; i < num_rows; i++)
 			if (tableau[i][pivot_col] > 0)
