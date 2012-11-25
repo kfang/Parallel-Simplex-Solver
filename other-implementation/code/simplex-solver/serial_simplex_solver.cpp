@@ -49,7 +49,6 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 		}
 		if (pivot_row >= num_rows) {
 			//Then unbounded
-			std::cout << pivot_col;
 			std::cout << "The problem is unbounded\n";
 			return Simplex_Solution();
 		}
