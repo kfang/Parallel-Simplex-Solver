@@ -27,11 +27,13 @@ Serial_Simplex_Solver::~Serial_Simplex_Solver(void)
 
 Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 {
+	std::cout << "Before create\n";
 	// Make a new tableau for solving the problem.
 	float** tableau = create_tableau(problem);
-
+	std::cout << "Before getting num vars\n";
 	// Get the number of variables and constraints in the problem.
 	int num_variables = problem.get_num_variables();
+	std::cout << "before gtting num constrants\n";
 	int num_constraints = problem.get_num_constraints();
 
 	// Calculate the number of rows and columns in the tableau and allocate memory.
