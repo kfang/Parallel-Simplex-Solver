@@ -40,10 +40,14 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
-	int pivot_col, pivot_row;
+	int pivot_col, pivot_row, x;
 	for (;;) {
-		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
-		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
+		x = rand();
+		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][(pivot_col + x) % (num_cols-1)] >= 0); pivot_col++);
+		pivot_col = (pivot_col + x) % (num_cols-1);
+		x = rand();
+		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[(pivot_row + x) % (num_rows - 1) + 1][pivot_col] <= 0); pivot_row++);
+		pivot_row = (pivot_row + x) % (num_rows - 1);
 		if (pivot_col >= num_cols-1) {
 			break;
 		}
