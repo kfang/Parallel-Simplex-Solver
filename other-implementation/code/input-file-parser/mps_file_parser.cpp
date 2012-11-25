@@ -33,7 +33,7 @@ const boost::regex col_line("\\s*([\\w.-]+)(?:\\s+([\\w.-]+)\\s+([0-9.+-eE]+)(?:
 const boost::regex rhs_start("\\s*RHS\\s*");
 const boost::regex rhs_line("\\s*([\\w.-]+)\\s+([\\w.-]+)\\s+([0-9.+-eE]+)(?:\\s+([\\w.-]+)\\s+([0-9.+-eE]+))?\\s*");
 const boost::regex bounds_start("\\s*BOUNDS\\s*");
-const boost::regex bounds_line("\\s*(UP|LO|FX|FR)\\s+([\\w.-]+)\\s+([\\w.-]+)(?:\\s+([0-9.+-eE]+))?\\s*");
+const boost::regex bounds_line("\\s*(UP|LO|FX|FR)\\s+([\\w.-]+)\\s+([\\w.-]+)(\\s+([0-9.+-eE]+))?\\s*");
 const boost::regex end_data("\\s*ENDATA\\s*");
 
 //--------------------------------------------------------------------------
