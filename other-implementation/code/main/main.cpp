@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 		// Parse the current input file and build a problem instance.
 		char* input_file = cmd_line_opts.input_files[i];
 		Simplex_Problem problem = input_file_parser->parse(input_file);
-
+		std::cout << "Problem is in parsing\n";
 		// TODO get rid of this print statement
 		problem.print();
 
