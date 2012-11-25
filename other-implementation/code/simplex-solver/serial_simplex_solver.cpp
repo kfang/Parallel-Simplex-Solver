@@ -62,9 +62,9 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 		//print_matrix(num_rows, num_cols, tableau);
 		std::cout << "pivot_row: " << pivot_row << std::endl;
 		std::cout << "pivot_col: " << pivot_col << std::endl;
-		//std::cout << "AFTER PIVOT" << std::endl;
+		std::cout << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
-		print_matrix(num_rows, num_cols, tableau);
+		//print_matrix(num_rows, num_cols, tableau);
 	}
 
 	std::cout << "DONE!!!" << std::endl;
