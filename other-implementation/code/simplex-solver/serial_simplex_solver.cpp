@@ -40,10 +40,13 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
+	std::cout << "Starting prob\n";
 	int pivot_col, pivot_row;
 	for (;;) {
 		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
+		std::cout << "Picked col\n";
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
+		std::cout << "Picked row\n";
 		if (pivot_col >= num_cols-1) {
 			break;
 		}
