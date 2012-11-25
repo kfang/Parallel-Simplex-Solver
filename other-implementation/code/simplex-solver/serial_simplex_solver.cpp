@@ -41,6 +41,7 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
 	int pivot_col, pivot_row;
+	print_matrix(num_rows,num_cols, tableau);
 	for (;;) {
 		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
@@ -49,6 +50,7 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 		}
 		if (pivot_row >= num_rows) {
 			//Then unbounded
+			std::cout << pivot_col;
 			std::cout << "The problem is unbounded\n";
 			return Simplex_Solution();
 		}
