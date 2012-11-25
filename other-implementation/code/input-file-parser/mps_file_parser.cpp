@@ -151,7 +151,7 @@ void handle_rhs_line(const boost::cmatch& matched_line,
 	// Set the right hand side entry for the second row if needed.
 	if (row2_specified) {
 		float row2_val = atof(matched_line[5].str().c_str());
-		problem_instance.set_constraint_rhs(row1_name, row2_val);
+		problem_instance.set_constraint_rhs(row2_name, row2_val);
 	}
 }
 
