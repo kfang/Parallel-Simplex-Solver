@@ -37,17 +37,13 @@ int main(int argc, char** argv)
 		char* input_file = cmd_line_opts.input_files[i];
 		Simplex_Problem problem = input_file_parser->parse(input_file);
 
-		// TODO get rid of this print statement
-		problem.print();
-
 		// Find a solution to the problem.
 		Simplex_Solution solution = solver->solve(problem);
-/*
 
 		// Output the solution and statistics regarding how long it took to
 		// solve, number of iterations, etc.
-		cout << solution.get_statistics() << endl;
-*/
+      //std::cout << solution.get_solution_info() << std::endl;
+		printf("%d,%f\n", solution.get_num_variables(), solution.get_run_time());
 	}
 
 

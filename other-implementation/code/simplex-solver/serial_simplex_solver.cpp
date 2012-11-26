@@ -34,42 +34,111 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_variables = problem.get_num_variables();
 	int num_constraints = problem.get_num_constraints();
 
-	// Calculate the number of rows and columns in the tableau and allocate memory.
+	// Calculate the number of rows and columns in the tableau.
 	int num_rows = num_constraints + 1;
 	int num_cols = num_variables + num_constraints + 1;
 
 	// While the objective function can be increased, find a better
-	// vertex on the simplex.
-	int pivot_col, pivot_row;
-	for (;;) {
-		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
-		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
-		if (pivot_col >= num_cols-1) {
-			break;
+	// vertex on the simplex.  This section will throw an exception
+	// when it stops iterating over the vertices.
+	double start_time = timestamp();
+	int num_iterations = 0;
+	Simplex_Solution solution;
+	try {
+		while (true) {
+			num_iterations++;
+			find_better_vertex(num_rows, num_cols, tableau);
 		}
-		if (pivot_row >= num_rows) {
-			//Then unbounded
-			std::cout << "The problem is unbounded\n";
-			return Simplex_Solution();
-		}
-		for (int i = pivot_row+1; i < num_rows; i++)
-			if (tableau[i][pivot_col] > 0)
-				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
-					pivot_row = i;
-		std::cout << "---------------------------------" << std::endl;
-		std::cout << "BEFORE PIVOT" << std::endl;
-		//print_matrix(num_rows, num_cols, tableau);
-		std::cout << "pivot_row: " << pivot_row << std::endl;
-		std::cout << "pivot_col: " << pivot_col << std::endl;
-		std::cout << "AFTER PIVOT" << std::endl;
-		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
-		//print_matrix(num_rows, num_cols, tableau);
 	}
 
-	std::cout << "DONE!!!" << std::endl;
-	std::cout << "Max value: " << tableau[0][num_cols-1] << std::endl;
+	// The objective function can no longer be improved.  Create a solution
+	// object with all necessary information about the running of the algorithm.
+	catch (solution_type type) {
+		double end_time = timestamp();
+		double run_time = end_time - start_time;
+		solution.set_name(problem.get_name() + " Solution");
+		solution.set_type(type);
+		solution.set_num_variables(problem.get_num_variables());
+		solution.set_num_constraints(problem.get_num_constraints());
+		solution.set_run_time(run_time);
+		solution.set_obj_func_val(tableau[0][num_cols-1]);
+		solution.set_num_iterations(num_iterations);
+		// TODO: fill out variable coefficients.
+	}
 
-	return Simplex_Solution();
+	// Clean up the memory used for the tableau.
+	delete_2D_array(num_rows, num_cols, tableau);
+
+	return solution;
+}
+
+//--------------------------------------------------------------------------
+// FIND_BETTER_VERTEX
+
+void Serial_Simplex_Solver::find_better_vertex(const int& num_rows,
+                                               const int& num_cols,
+                                               float** tableau)
+{
+	int pivot_col = choose_pivot_column(num_rows, num_cols, tableau);
+	int pivot_row = choose_pivot_row(pivot_col, num_rows, num_cols, tableau);
+	pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
+}
+
+//--------------------------------------------------------------------------
+// CHOOSE_PIVOT_COLUMN
+
+int Serial_Simplex_Solver::choose_pivot_column(const int& num_rows,
+                                               const int& num_cols,
+                                               float** tableau)
+{
+	// Set the pivot column to be the first negative entry of the objective function.
+	int pivot_col = 0;
+	while ((pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0)) {
+	    pivot_col++;
+	}
+
+	// If there were no negative entries in the objective funtion then it can
+	// no longer be increased/
+	if (pivot_col >= num_cols-1) {
+		throw OPTIMAL_SOLUTION_FOUND;
+	}
+
+	return pivot_col;
+}
+
+//--------------------------------------------------------------------------
+// CHOOSE_PIVOT_ROW
+
+int Serial_Simplex_Solver::choose_pivot_row(const int& pivot_col,
+                                            const int& num_rows,
+                                            const int& num_cols,
+                                            float** tableau)
+{
+	// Initialize the pivot row to be the first non-zero, non-negative
+	// entry in the pivot column.
+	int pivot_row = 1;
+	while ((pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0)) {
+		pivot_row++;
+	}
+
+	// If there are no positive, non-zero entries in the row then we
+	// know we have an unbouneded problem.
+	if (pivot_row >= num_rows) {
+		throw UNBOUNDED_SOLUTION;
+	}
+
+	// Update the pivot row if we find a row with smaller ratio.
+	for (int row = pivot_row+1; row < num_rows; row++) {
+		if (tableau[row][pivot_col] > 0) {
+			float pivot_row_ratio = tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col];
+			float curr_row_ratio = tableau[row][num_cols-1]/tableau[row][pivot_col];
+			if (curr_row_ratio < pivot_row_ratio) {
+				pivot_row = row;
+			}
+		}
+	}
+
+	return pivot_row;
 }
 
 //--------------------------------------------------------------------------
@@ -153,6 +222,8 @@ void Serial_Simplex_Solver::add_constraints_to_tableau(const int& num_rows,
                                                        float** tableau,
                                                        Simplex_Problem& problem)
 {
+	// TODO: This needs to be cleaned up and made more readable.  It should
+	// detect problems that don't have the origin as a solution and report it.
 	int row = 1;
 	for (Simplex_Problem::constraint_name_iterator i = problem.get_constraint_name_iterator();
 	     i != problem.get_constraint_name_end();

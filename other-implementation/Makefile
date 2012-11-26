@@ -15,7 +15,8 @@ OBJDIR = obj
 TARGETS = simplex
 OBJS = ${CPPFILES:%.cpp=%.o}
 LIBS = -lboost_regex
-LIBDIRS = -L ../lib -L $(OBJDIR) 
+LIBDIRS = -L ../lib -L $(OBJDIR)
+GENERATEDMPS = $(shell find data/mps/generated -name '*.mps')
 
 #---------------------------------------------------------------------------
 # VPATH SETTINGS
@@ -47,13 +48,23 @@ test: $(TARGETS)
 graphs:
 	@echo A graph constructing script has not implemented yet,
 
+.PHONY: problems
+problems:
+	@echo Generating random problems in mps format...
+	@./scripts/generate_random_problems.sh
+
 .PHONY: clean
 clean:
 	@echo -e "Removing..." $(addprefix '\n',$(OBJS) $(TARGETS))
 	@find . -name '*.o' -print | xargs rm -f; rm -f $(TARGETS)
 
+.PHONY: clean_generated
+clean_generated:
+	@echo -e "Removing generated problems..."
+	@rm -rf data/generated
+
 .PHONY: loc
 loc:
 	@echo 'Lines of Code for the Project'
 	@echo '-----------------------------'
-	@find . -regex '.+\.\(h\|\cpp\)' | grep -v boost | xargs wc -l Makefile
+	@find . -regex '.+\.\(h\|cpp\|py\|sh\)' | grep -v boost | xargs wc -l Makefile

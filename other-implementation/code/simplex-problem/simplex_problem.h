@@ -81,6 +81,7 @@ public:
 
 	// methods
 	void set_name(const std::string& name);
+	std::string get_name(void);
 	void add_constraint(const std::string& name, constraint_type type);
 	void add_obj_func(const std::string& name, optimization_type type);
 	void set_constraint_coeff(const std::string& constraint_name,

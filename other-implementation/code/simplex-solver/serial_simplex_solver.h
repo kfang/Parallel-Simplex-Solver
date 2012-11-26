@@ -32,6 +32,16 @@ private:
 	                                const int& num_cols,
 	                                float** tableau,
 	                                Simplex_Problem& problem);
+	void find_better_vertex(const int& num_rows,
+	                        const int& num_cols,
+	                        float** tableau);
+	int choose_pivot_column(const int& num_rows,
+	                        const int& num_cols,
+	                        float** tableau);
+	int choose_pivot_row(const int& pivot_col,
+	                     const int& num_rows,
+	                     const int& num_cols,
+	                     float** tableau);
 	void pivot(const int& pivot_row, const int& pivot_col,
 	           const int& num_rows, const int& num_cols,
 	           float** tableau);

@@ -8,12 +8,15 @@
 #include <iostream>
 #include <cstdio>
 #include <cassert>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
 
 //--------------------------------------------------------------------------
 // CREATE_2D_ARRAY
 
 template<class T>
-T** create_2D_array(int num_rows, int num_cols)
+T** create_2D_array(const int& num_rows, const int& num_cols)
 {
 	T** array = new T*[num_rows]();
 	assert(array != 0);
@@ -23,6 +26,18 @@ T** create_2D_array(int num_rows, int num_cols)
 	}
 
 	return array;
+}
+
+//--------------------------------------------------------------------------
+// DELETE_2D_ARRAY
+
+template<class T>
+void delete_2D_array(const int& num_rows, const int& num_cols, T** array)
+{
+	for (int row = 0; row < num_rows; row++) {
+		delete[] array[row];
+	}
+	delete[] array;
 }
 
 //--------------------------------------------------------------------------
@@ -40,5 +55,12 @@ void print_matrix(int num_rows, int num_cols, float** M)
 
 //--------------------------------------------------------------------------
 // TIMESTAMP
+
+double timestamp(void)
+{
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+	return tv.tv_sec + 1e-6*tv.tv_usec;
+}
 
 #endif

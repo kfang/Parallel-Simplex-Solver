@@ -404,6 +404,14 @@ void Simplex_Problem::set_name(const std::string& name)
 }
 
 //--------------------------------------------------------------------------
+// GET_NAME
+
+std::string Simplex_Problem::get_name(void)
+{
+	return name;
+}
+
+//--------------------------------------------------------------------------
 // ADD_CONSTRAINT
 
 void Simplex_Problem::add_constraint(const std::string& name, constraint_type type)
