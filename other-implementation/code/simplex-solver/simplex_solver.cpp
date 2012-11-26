@@ -39,9 +39,7 @@ Simplex_Solver* create_solver(Configuration_Options& config_opts)
 
 	// Build an OMP solver.
 	else if (solver_type == "omp") {
-		std::cerr << "ERROR: OMP solver has not been implemented yet."
-			  << std::endl;
-		exit(EXIT_FAILURE);
+		solver = new Omp_Simplex_Solver();
 	}
 
 	// Solver type does not exist.
