@@ -103,7 +103,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
 	cudaThreadSynchronize();
 
-	helloCuda<<<1, 5>>>(1.2345f);
+	helloCUDA<<<1, 5>>>(1.2345f);
 
 	// Copy back
 	cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost);
