@@ -118,7 +118,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	}
 
 	//cudaThreadSynchronize();
-
+	/*
 	int k = 1;
 	int* ip;
 	int* after;
@@ -144,9 +144,13 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	std::cout << "Test value: " << *after << std::endl;
 
 	cudaFree(device_val);
-
+	*/
 	// Copy back
-	//cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost);
+	if (cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
+		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "Failed to copy back" << std::endl;
+        exit(1);
+	}
 
 	// Scale the pivot row
 	float pivot_val = tableau[pivot_row][pivot_col];
