@@ -28,6 +28,8 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 
 Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 {
+	omp_set_num_threads(8);
+
 	// Make a new tableau for solving the problem.
 	float** tableau = create_tableau(problem);
 
