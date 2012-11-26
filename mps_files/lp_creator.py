@@ -19,7 +19,7 @@ def main():
 		obj = spaces(obj, 35)
 		obj = obj + str(randint(1,9))
 		print obj
-		if ((i/num_cols) >= ((percent_done+10)/100)):
+		if ((float(i)/num_cols) >= (float((percent_done+10))/100)):
 			percent_done += 10
 			print "Percent Done: " + str(percent_done) + "%"
 		for j in range(num_rows):
