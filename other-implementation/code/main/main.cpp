@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 		Simplex_Problem problem = input_file_parser->parse(input_file);
 
 		// TODO get rid of this print statement
-		problem.print();
+		//problem.print();
 
 		// Find a solution to the problem.
 		Simplex_Solution solution = solver->solve(problem);
