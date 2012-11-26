@@ -38,8 +38,8 @@ private:
 	void pivot(const int& pivot_row, const int& pivot_col,
 	           const int& num_rows, const int& num_cols,
 	           float** tableau, float** cuda_tableau);
-	void cuda_pivot(const int& pivot_row, const int& pivot_col,
-			const int& num_rows, const int& num_cols,
+	void cuda_pivot(int pivot_row, int pivot_col,
+			int num_rows, int num_cols,
 			float** tableau);
 };
 
