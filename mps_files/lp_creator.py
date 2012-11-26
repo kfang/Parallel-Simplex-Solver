@@ -11,6 +11,7 @@ def main():
 	for i in range(num_rows):
 		print " L  r" + str(i)
 	print "COLUMNS"
+	percent_done = 0
 	for i in range(num_cols):
 		obj = "    c" + str(i)
 		obj = spaces(obj, 14)
@@ -18,7 +19,9 @@ def main():
 		obj = spaces(obj, 35)
 		obj = obj + str(randint(1,9))
 		print obj
-		sys.stderr.write(str(i) + '\n')
+		if i/num_cols >= (percent_done+10)/100:
+			percent_done += 10
+			print "Percent Done: " + str(percent_done) + "%"
 		for j in range(num_rows):
 			l = "    c" + str(i)
 			l = spaces(l, 14)
