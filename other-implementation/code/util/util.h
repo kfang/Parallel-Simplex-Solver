@@ -28,7 +28,7 @@ T** create_2D_array(int num_rows, int num_cols)
 //--------------------------------------------------------------------------
 // PRINT_MATRIX
 
-void print_matrix(int num_rows, int num_cols, float** M)
+inline void print_matrix(int num_rows, int num_cols, float** M)
 {
 	for (int row = 0; row < num_rows; row++) {
 		for (int col = 0; col < num_cols; col++) {
