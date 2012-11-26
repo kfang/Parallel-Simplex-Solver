@@ -43,7 +43,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	float** cuda_tableau;
 
 	//Make device space
-	if (cudaMalloc((void**)&cuda_tableau, num_rows*num_cols*sizeof(float)) != cudaSuccess {
+	if (cudaMalloc((void**)&cuda_tableau, num_rows*num_cols*sizeof(float)) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 		std::cerr << "First Malloc Failed" << std::endl;
         exit(1);
