@@ -62,7 +62,9 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 				pivot_col = i;
 			}
 		}
+		std::cout << "mid loop" << std::endl;
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
+			std::cout << "end loop" << std::endl;
 		if (min_val >= 0) {
 			break;
 		}
@@ -71,6 +73,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 			std::cout << "The problem is unbounded\n";
 			return Simplex_Solution();
 		}
+		std::cout << "before" << std::endl;
 		for (int i = pivot_row+1; i < num_rows; i++)
 			if (tableau[i][pivot_col] > 0)
 				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
