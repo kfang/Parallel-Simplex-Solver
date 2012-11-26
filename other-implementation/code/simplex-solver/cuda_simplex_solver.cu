@@ -214,7 +214,7 @@ void Cuda_Simplex_Solver::add_constraints_to_tableau(const int& num_rows,
 //--------------------------------------------------------------------------
 //  Cuda Pivot
 
-__global__ void Cuda_Simplex_Solver::cuda_pivot(int pivot_row, int pivot_col,
+__global__ void cuda_pivot(int pivot_row, int pivot_col,
 		int num_rows, int num_cols,
 		float** tableau)
 {
