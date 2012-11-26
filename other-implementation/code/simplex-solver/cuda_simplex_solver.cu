@@ -81,6 +81,8 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		print_matrix(num_rows, num_cols, tableau);
 	}
 
+	cudaFree(cuda_tableau);
+
 	std::cout << "DONE!!!" << std::endl;
 	std::cout << "Max value: " << tableau[0][num_cols-1] << std::endl;
 
@@ -100,6 +102,8 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	// Do Pivot
 	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
 	cudaThreadSynchronize();
+
+	helloCuda<<<1, 5>>>(1.2345f);
 
 	// Copy back
 	cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost);

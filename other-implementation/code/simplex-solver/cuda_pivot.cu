@@ -1,3 +1,10 @@
+#include <stdio.h>
+
+__global__ void helloCUDA(float f)
+{
+  printf("Hello thread %d, f=%f\n", threadIdx.x, f);
+}
+
 //--------------------------------------------------------------------------
 //  Cuda Pivot
 
