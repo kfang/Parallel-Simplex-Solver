@@ -38,6 +38,16 @@ inline void print_matrix(int num_rows, int num_cols, float** M)
 	}
 }
 
+inline void print_flat_matrix(int num_rows, int num_cols, float* M)
+{
+	for (int row = 0; row < num_rows; row++) {
+		for (int col = 0; col < num_cols; col++) {
+			printf("%8.2f", M[row*num_cols + col]);
+		}
+		std::cout << std::endl;
+	}
+}
+
 //--------------------------------------------------------------------------
 // TIMESTAMP
 
