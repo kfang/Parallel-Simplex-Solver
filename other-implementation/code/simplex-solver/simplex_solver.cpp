@@ -25,6 +25,7 @@ Simplex_Solver* create_solver(Configuration_Options& config_opts)
 	                          config_opts.get_option("solver") :
 	                          "serial";
 	Simplex_Solver* solver;
+	std::cout << solver_type << std::endl;
 
 	// Build a serial solver.
 	if (solver_type == "serial") {
