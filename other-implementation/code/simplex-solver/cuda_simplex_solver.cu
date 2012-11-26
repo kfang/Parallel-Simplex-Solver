@@ -42,7 +42,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	float** cuda_tableau;
 
 	//Make device space
-	cudaMalloc((void**)&cuda_tableau, num_rows*num_cos*sizeof(float));
+	cudaMalloc((void**)&cuda_tableau, num_rows*num_cols*sizeof(float));
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
