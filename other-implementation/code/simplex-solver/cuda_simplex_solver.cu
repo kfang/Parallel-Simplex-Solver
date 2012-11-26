@@ -113,11 +113,11 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 //--------------------------------------------------------------------------
 //  Cuda Pivot
 
-__global__ void Cuda_Simplex_Solver::cuda_pivot(int pivot_row, int pivot_col,
-											int num_rows, int num_cols,
-											float** tableau)
+__global__ void Cuda_Simplex_Solver::cuda_pivot(float** tableau)
 {
 	// Keep the pivot value in a register.
+	int pivot_row = 1;
+	int pivot_col = 1;
 	float pivot_val = tableau[pivot_row][pivot_col];
 
 	int row = blockIdx.x;
