@@ -37,7 +37,7 @@ all: $(TARGETS)
 
 simplex: $(OBJS)
 	@echo linking $(OBJS) $(LIBS)
-	@cd $(OBJDIR); $(NVCC) $(CCOPTS) $(OBJS) $(LIBDIRS) $(LIBS) -o ../$@
+	@cd $(OBJDIR); $(CC) $(CCOPTS) $(OBJS) $(LIBDIRS) $(LIBS) -o ../$@
 
 %.o: %.cpp
 	@echo compiling $<...
