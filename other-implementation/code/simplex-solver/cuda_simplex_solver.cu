@@ -103,7 +103,8 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	// Copy back
 	cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost);
 
-	// Scale the pivot row.
+	// Scale the pivot row
+	float pivot_val = tableau[pivot_row][pivot_col];
 	for (int col = 0; col < num_cols; col++) {
 		tableau[pivot_row][col] /= pivot_val;
 	}
@@ -112,8 +113,8 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 //--------------------------------------------------------------------------
 //  Cuda Pivot
 
-__global__ void Cuda_Simplex_Solver::cuda_pivot(const int& pivot_row, const int& pivot_col,
-											const int& num_rows, const int& num_cols,
+__global__ void Cuda_Simplex_Solver::cuda_pivot(int pivot_row, int pivot_col,
+											int num_rows, int num_cols,
 											float** tableau)
 {
 	// Keep the pivot value in a register.
