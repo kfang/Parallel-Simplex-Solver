@@ -77,7 +77,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 			if (tableau[i][pivot_col] > 0) {
 				std::cout << "inside if" << std::endl;
 				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col]) {
-					std::cout << "inside if 2" << std:endl;
+					std::cout << "inside if 2" << std::endl;
 					pivot_row = i;
 				}
 			}
