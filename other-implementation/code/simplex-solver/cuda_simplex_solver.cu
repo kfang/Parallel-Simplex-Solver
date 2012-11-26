@@ -72,7 +72,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		pivot_col = 0;
 		for (int i = 0; (i < num_cols-1); i++){
 			if (flat_tableau[i] < min_val) {
-				min_val = flat_tableau[0][i];
+				min_val = flat_tableau[i];
 				pivot_col = i;
 			}
 		}
