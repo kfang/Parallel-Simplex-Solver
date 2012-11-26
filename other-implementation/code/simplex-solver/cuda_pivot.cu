@@ -20,5 +20,5 @@ __global__ void cuda_pivot(int pivot_row, int pivot_col,
 }
 
 __global__ void cuda_test(int* vals) {
-	vals[0] += 1;
+	*vals = 2;
 }
