@@ -54,6 +54,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	int pivot_col, pivot_row;
 	for (;;) {
 		float min_val = tableau[0][0];
+		std::cout << "Start of loop" << std::endl;
 		pivot_col = 0;
 		for (int i = 0; (i < num_cols-1); i++){
 			if (tableau[0][i] < min_val) {
