@@ -85,7 +85,6 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		std::cout << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau, cuda_tableau);
 		print_matrix(num_rows, num_cols, tableau);
-		std::cout << "after everything" << std::endl;
 	}
 
 	cudaFree(cuda_tableau);
@@ -104,7 +103,11 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
                             float** tableau, float** cuda_tableau)
 {
 	// Cuda Pointers
-	//cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice);
+	if (cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice) != cudaSuccess) {
+		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "Failed to copy tableau" << std::endl;
+        exit(1);
+	}
 
 	// Do Pivot
 	//cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
