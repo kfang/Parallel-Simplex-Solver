@@ -9,7 +9,7 @@
 #include "cuda_simplex_solver.h"
 #include "simplex_problem.h"
 #include "simplex_solution.h"
-#include "util.h"
+//#include "util.h"
 
 //--------------------------------------------------------------------------
 // CONSTRUCTORS AND DESTRUCTOR
