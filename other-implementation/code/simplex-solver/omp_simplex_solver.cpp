@@ -28,7 +28,7 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 
 Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 {
-	omp_set_num_threads(8);
+	//omp_set_num_threads(8);
 
 	// Make a new tableau for solving the problem.
 	float** tableau = create_tableau(problem);
@@ -97,8 +97,6 @@ void Omp_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	{
 	#pragma omp for
 	for (int row = 0; row < num_rows; row++) {
-		int id = omp_get_thread_num();
-		std::cout << "This is thread: " << id << std::endl;
 		float scale = tableau[row][pivot_col]/pivot_val;
 		if (row != pivot_row) {
 			for (int col = 0; col < num_cols; col++) {
