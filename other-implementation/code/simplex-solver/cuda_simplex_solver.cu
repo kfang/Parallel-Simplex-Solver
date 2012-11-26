@@ -83,6 +83,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		std::cout << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau, cuda_tableau);
 		print_matrix(num_rows, num_cols, tableau);
+		std::cout << "after everything" << std::endl;
 	}
 
 	cudaFree(cuda_tableau);
