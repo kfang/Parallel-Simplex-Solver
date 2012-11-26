@@ -125,7 +125,7 @@ __global__ void Cuda_Simplex_Solver::cuda_pivot(const int& pivot_row, const int&
 	// Calculate new value in tableau
 	if (row != pivot_row) {
 		float pivot_val = tableau[pivot_row][pivot_col];
-		float scale = tableau[row][pivot_col]/pivot_val
+		float scale = tableau[row][pivot_col]/pivot_val;
 		tableau[row][col] -= scale*tableau[pivot_row][col];
 	}
 
