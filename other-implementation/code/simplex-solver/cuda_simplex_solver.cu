@@ -97,6 +97,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 		std::cout << "pivot_row: " << pivot_row << std::endl;
 		std::cout << "pivot_col: " << pivot_col << std::endl;
+		std::cout << "pivot val: " << flat_tableau << std::endl;
 		std::cout << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
@@ -117,7 +118,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
                             const int& num_rows, const int& num_cols,
                             float* tableau, float* cuda_tableau)
 {
-	// Cuda Pointers
+	// Copy to device
 	if (cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 		std::cerr << "Failed to copy tableau" << std::endl;
@@ -133,33 +134,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	}
 
 	//cudaThreadSynchronize();
-	/*
-	int k = 1;
-	int* ip;
-	int* after;
-	ip = &k;
-	int* device_val;
-	if (cudaMalloc((void**)&device_val, 1*sizeof(int)) != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed to malloc" << std::endl;
-        exit(1);
-	}
 
-	if (cudaMemcpy(device_val, ip, 1*sizeof(int), cudaMemcpyHostToDevice) != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed to copy to device" << std::endl;
-        exit(1);
-	}
-	std::cout << "Test value before: " << *ip << std::endl;
-	cuda_test<<<1, 1>>>(device_val);
-
-	cudaThreadSynchronize();
-
-	cudaMemcpy(after, device_val, 1*sizeof(int), cudaMemcpyDeviceToHost);
-	std::cout << "Test value: " << *after << std::endl;
-
-	cudaFree(device_val);
-	*/
 	// Copy back
 	if (cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
@@ -171,6 +146,13 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	float pivot_val = tableau[pivot_row*num_cols + pivot_col];
 	for (int col = 0; col < num_cols; col++) {
 		tableau[pivot_row*num_cols + col] /= pivot_val;
+	}
+	
+	// Copy to device
+	if (cudaMemcpy((cuda_tableau + (pivot_row*num_cols)), (tableau + (pivot_row*num_cols)), num_cols, cudaMemcpyHostToDevice) != cudaSuccess) {
+		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "Failed to copy tableau" << std::endl;
+        exit(1);
 	}
 }
 
