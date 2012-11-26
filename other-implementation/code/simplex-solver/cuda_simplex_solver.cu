@@ -119,12 +119,14 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
                             const int& num_rows, const int& num_cols,
                             float* tableau, float* cuda_tableau)
 {
+	/*
 	// Copy to device
 	if (cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 		std::cerr << "Failed to copy tableau" << std::endl;
         exit(1);
 	}
+	*/
 
 	// Do Pivot
 	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
