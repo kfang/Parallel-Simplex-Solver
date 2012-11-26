@@ -116,6 +116,8 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	cudaMemcpy(ip, device_val, 1*sizeof(int), cudaMemcpyDeviceToHost)
 	std::cout << "Test value: " << *ip << std::endl;
 
+	cudaFree(device_val);
+
 	// Copy back
 	cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost);
 
