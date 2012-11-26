@@ -5,11 +5,12 @@
 #---------------------------------------------------------------------------
 # VARIABLES DEFINITIONS
 
-CC = g++
+CC = nvcc
 CCOPTS = -O3 $(addprefix -I, $(SRCDIRS))
 
 SRCDIRS = $(shell find code/ -type d)
 CPPFILES = $(shell for x in `find code/ -name '*.cpp'`; do echo `basename $$x`; done;)
+CUDAFILES = $(shell for x in `find code/ -name '*.cu'`; do echo `basename $$x`; done;)
 OBJDIR = obj
 
 TARGETS = simplex
@@ -56,4 +57,4 @@ clean:
 loc:
 	@echo 'Lines of Code for the Project'
 	@echo '-----------------------------'
-	@find . -regex '.+\.\(h\|\cpp\)' | grep -v boost | xargs wc -l Makefile
+	@find . -regex '.+\.\(h\|\cpp\|\cu)' | grep -v boost | xargs wc -l Makefile
