@@ -11,7 +11,6 @@
 #include "simplex_solution.h"
 #include "util.h"
 #include "cuda_pivot.h"
-#include "cutil.h"
 
 //--------------------------------------------------------------------------
 // CONSTRUCTORS AND DESTRUCTOR
