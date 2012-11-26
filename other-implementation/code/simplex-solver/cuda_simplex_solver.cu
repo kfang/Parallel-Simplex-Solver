@@ -108,16 +108,17 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	int* after;
 	ip = &k;
 	int* device_val;
-	cudaMalloc((void**)&device_val, 1*sizeof(int));
+	if (cudaMalloc((void**)&device_val, 1*sizeof(int)) != cudaSucess) {
+		cerr << cudaGetErrorString(cudaGetLastError()) << endl;
+        exit(1);
+	}
 
-	cudaMemcpy(device_val, ip, 1*sizeof(int), cudaMemcpyHostToDevice);
+	if (cudaMemcpy(device_val, ip, 1*sizeof(int), cudaMemcpyHostToDevice) != cudaSuccess) {
+		cerr << cudaGetErrorString(cudaGetLastError()) << endl;
+        exit(1);
+	}
 	std::cout << "Test value before: " << *ip << std::endl;
 	cuda_test<<<1, 1>>>(device_val);
-	if ( cudaSuccess != cudaGetLastError() ) {
-		printf(cudaGetErrorString(cudaGetLastError()));
-		printf("\n");
-	    printf( "Error!\n" );
-	}
 
 	cudaThreadSynchronize();
 
