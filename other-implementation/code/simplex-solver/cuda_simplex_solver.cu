@@ -110,28 +110,6 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	}
 }
 
-//--------------------------------------------------------------------------
-//  Cuda Pivot
-
-__global__ void Cuda_Simplex_Solver::cuda_pivot(float** tableau)
-{
-	// Keep the pivot value in a register.
-	int pivot_row = 1;
-	int pivot_col = 1;
-	float pivot_val = tableau[pivot_row][pivot_col];
-
-	int row = blockIdx.x;
-	int col = threadIdx.x;
-
-	// Calculate new value in tableau
-	if (row != pivot_row) {
-		float pivot_val = tableau[pivot_row][pivot_col];
-		float scale = tableau[row][pivot_col]/pivot_val;
-		tableau[row][col] -= scale*tableau[pivot_row][col];
-	}
-
-}
-
 
 //--------------------------------------------------------------------------
 // CREATE_TABLEAU
@@ -231,4 +209,26 @@ void Cuda_Simplex_Solver::add_constraints_to_tableau(const int& num_rows,
 		// Move to the next constraint.
 		row++;
 	}
+}
+
+//--------------------------------------------------------------------------
+//  Cuda Pivot
+
+__global__ void Cuda_Simplex_Solver::cuda_pivot(int pivot_row, int pivot_col,
+		int num_rows, int num_cols,
+		float** tableau)
+{
+	// Keep the pivot value in a register.
+	float pivot_val = tableau[pivot_row][pivot_col];
+
+	int row = blockIdx.x;
+	int col = threadIdx.x;
+
+	// Calculate new value in tableau
+	if (row != pivot_row) {
+		float pivot_val = tableau[pivot_row][pivot_col];
+		float scale = tableau[row][pivot_col]/pivot_val;
+		tableau[row][col] -= scale*tableau[pivot_row][col];
+	}
+
 }

@@ -38,8 +38,10 @@ private:
 	void pivot(const int& pivot_row, const int& pivot_col,
 	           const int& num_rows, const int& num_cols,
 	           float** tableau, float** cuda_tableau);
-	__global__ void cuda_pivot(float** tableau);
 };
 
+__global__ void cuda_pivot(int pivot_row, int pivot_col,
+		int num_rows, int num_cols,
+		float** tableau);
 
 #endif /* CUDA_SIMPLEX_SOLVER_H_ */
