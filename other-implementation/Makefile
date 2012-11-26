@@ -5,8 +5,10 @@
 #---------------------------------------------------------------------------
 # VARIABLES DEFINITIONS
 
-CC = nvcc
+CC = g++
+NVCC = /usr/local/cuda-4.2/bin/nvcc
 CCOPTS = -O3 $(addprefix -I, $(SRCDIRS))
+CUOPTS = -g -O3
 
 SRCDIRS = $(shell find code/ -type d)
 CPPFILES = $(shell for x in `find code/ -name '*.cpp'`; do echo `basename $$x`; done;)
@@ -14,7 +16,7 @@ CUDAFILES = $(shell for x in `find code/ -name '*.cu'`; do echo `basename $$x`; 
 OBJDIR = obj
 
 TARGETS = simplex
-OBJS = ${CPPFILES:%.cpp=%.o}
+OBJS = ${CPPFILES:%.cpp=%.o} ${CUDAFILES:%.cu=%.o}
 LIBS = -lboost_regex
 LIBDIRS = -L ../lib -L $(OBJDIR) 
 
@@ -39,6 +41,10 @@ simplex: $(OBJS)
 %.o: %.cpp
 	@echo compiling $<...
 	@$(CC) $(CCOPTS) $< -c; mkdir -p $(OBJDIR); mv $@ $(OBJDIR)
+
+%.o: %.cu
+	@echo compiling $<...
+	@$(NVCC) $(CUOPTS) $< -c; mkdir -p $(OBJDIR); mv $@ $(OBJDIR)
 
 .PHONY: test
 test: $(TARGETS)
