@@ -107,7 +107,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	int* ip;
 	int* after;
 	ip = &k;
-	int *device_val;
+	int* device_val;
 	cudaMalloc((void**)&device_val, 1*sizeof(int));
 
 	cudaMemcpy(device_val, ip, 1*sizeof(int), cudaMemcpyHostToDevice);
