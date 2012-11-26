@@ -94,18 +94,18 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		}
 		std::cout << "---------------------------------" << std::endl;
 		std::cout << "BEFORE PIVOT" << std::endl;
-		print_matrix(num_rows, num_cols, tableau);
+		//print_matrix(num_rows, num_cols, tableau);
 		std::cout << "pivot_row: " << pivot_row << std::endl;
 		std::cout << "pivot_col: " << pivot_col << std::endl;
 		std::cout << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
-		print_matrix(num_rows, num_cols, tableau);
+		//print_matrix(num_rows, num_cols, tableau);
 	}
 
 	cudaFree(cuda_tableau);
 
 	std::cout << "DONE!!!" << std::endl;
-	std::cout << "Max value: " << tableau[0][num_cols-1] << std::endl;
+	std::cout << "Max value: " << flat_tableau[num_cols-1] << std::endl;
 
 	return Simplex_Solution();
 }
