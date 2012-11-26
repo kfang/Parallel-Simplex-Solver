@@ -108,7 +108,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	int* after;
 	ip = &k;
 	int* device_val;
-	if (cudaMalloc((void**)&device_val, 1*sizeof(int)) != cudaSucess) {
+	if (cudaMalloc((void**)&device_val, 1*sizeof(int)) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
         exit(1);
 	}
