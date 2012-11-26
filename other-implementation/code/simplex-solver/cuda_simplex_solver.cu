@@ -110,11 +110,13 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	int* device_val;
 	if (cudaMalloc((void**)&device_val, 1*sizeof(int)) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "Failed to malloc" << std::endl;
         exit(1);
 	}
 
 	if (cudaMemcpy(device_val, ip, 1*sizeof(int), cudaMemcpyHostToDevice) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "Failed to copy to device" << std::endl;
         exit(1);
 	}
 	std::cout << "Test value before: " << *ip << std::endl;
