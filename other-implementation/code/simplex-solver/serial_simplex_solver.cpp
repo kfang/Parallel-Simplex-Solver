@@ -59,18 +59,17 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 			std::cout << "The problem is unbounded\n";
 			return Simplex_Solution();
 		}
-		std::cout << "Pivot value is: " << tableau[0][pivot_col] << std::endl;
 		for (int i = pivot_row+1; i < num_rows; i++)
 			if (tableau[i][pivot_col] > 0)
 				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
 					pivot_row = i;
-		std::cout << "Pivot row value is: " << tableau[pivot_row][pivot_col] << std::endl;
-		std::cout << "---------------------------------" << std::endl;
-		std::cout << "BEFORE PIVOT" << std::endl;
+		//std::cout << "Pivot row value is: " << tableau[pivot_row][pivot_col] << std::endl;
+		//std::cout << "---------------------------------" << std::endl;
+		//std::cout << "BEFORE PIVOT" << std::endl;
 		//print_matrix(num_rows, num_cols, tableau);
-		std::cout << "pivot_row: " << pivot_row << std::endl;
-		std::cout << "pivot_col: " << pivot_col << std::endl;
-		std::cout << "AFTER PIVOT" << std::endl;
+		//std::cout << "pivot_row: " << pivot_row << std::endl;
+		//std::cout << "pivot_col: " << pivot_col << std::endl;
+		//std::cout << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
 		//print_matrix(num_rows, num_cols, tableau);
 	}
