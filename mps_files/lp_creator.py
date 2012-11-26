@@ -21,7 +21,7 @@ def main():
 		print obj
 		if ((float(i)/num_cols) >= (float((percent_done+10))/100)):
 			percent_done += 10
-			print "Percent Done: " + str(percent_done) + "%"
+			sys.stderr.write("Percent Done: " + str(percent_done) + "%" + '\n');
 		for j in range(num_rows):
 			l = "    c" + str(i)
 			l = spaces(l, 14)
