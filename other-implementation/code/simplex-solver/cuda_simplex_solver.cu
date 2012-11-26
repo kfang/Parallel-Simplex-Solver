@@ -113,7 +113,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	cuda_test<<<1, 1>>>(device_val);
 	cudaThreadSynchronize();
 
-	cudaMemcpy(ip, device_val, 1*sizeof(int), cudaMemcpyDeviceToHost)
+	cudaMemcpy(ip, device_val, 1*sizeof(int), cudaMemcpyDeviceToHost);
 	std::cout << "Test value: " << *ip << std::endl;
 
 	cudaFree(device_val);
