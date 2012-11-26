@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cuda.h>
 #include "cuPrintf.cu"
 
 __global__ void helloCUDA(float f)
