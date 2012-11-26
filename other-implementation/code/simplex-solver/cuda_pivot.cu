@@ -20,5 +20,9 @@ __global__ void cuda_pivot(int pivot_row, int pivot_col,
 }
 
 __global__ void cuda_test(int* vals) {
-	*vals = 2;
+	if (*vals != 1) {
+		int k = 4/0;
+	} else {
+		*vals = 2;
+	}
 }
