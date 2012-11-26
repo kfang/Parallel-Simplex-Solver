@@ -43,7 +43,11 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	float** cuda_tableau;
 
 	//Make device space
-	cudaMalloc((void**)&cuda_tableau, num_rows*num_cols*sizeof(float));
+	if (cudaMalloc((void**)&cuda_tableau, num_rows*num_cols*sizeof(float)) != cudaSuccess {
+		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "First Malloc Failed" << std::endl;
+        exit(1);
+	}
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
@@ -97,11 +101,11 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
                             float** tableau, float** cuda_tableau)
 {
 	// Cuda Pointers
-	cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice);
+	//cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice);
 
 	// Do Pivot
-	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
-	cudaThreadSynchronize();
+	//cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
+	//cudaThreadSynchronize();
 
 	int k = 1;
 	int* ip;
@@ -130,7 +134,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	cudaFree(device_val);
 
 	// Copy back
-	cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost);
+	//cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost);
 
 	// Scale the pivot row
 	float pivot_val = tableau[pivot_row][pivot_col];
