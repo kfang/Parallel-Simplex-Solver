@@ -103,7 +103,18 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
 	cudaThreadSynchronize();
 
-	helloCUDA<<<1, 5>>>(1.2345f);
+	int *ip;
+	*ip = 1;
+	int *device_val;
+	cudaMalloc((void**)&device_val, 1*sizeof(int));
+
+	cudaMemcpy(device_val, ip, 1*sizeof(int), cudaMemcpyHostToDevice);
+
+	cuda_test<<<1, 1>>>(device_val);
+	cudaThreadSynchronize();
+
+	cudaMemcpy(ip, device_val, 1*sizeof(int), cudaMemcpyDeviceToHost)
+	std::cout << "Test value: " << *ip << std::endl;
 
 	// Copy back
 	cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost);
