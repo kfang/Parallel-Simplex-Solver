@@ -10,7 +10,7 @@
 
 __global__ void cuda_pivot(int pivot_row, int pivot_col,
 		int num_rows, int num_cols,
-		float** tableau);
+		float* tableau);
 
 __global__ void cuda_test(int* vals);
 

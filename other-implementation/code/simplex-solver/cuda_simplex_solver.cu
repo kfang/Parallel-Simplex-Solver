@@ -39,18 +39,16 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_rows = num_constraints + 1;
 	int num_cols = num_variables + num_constraints + 1;
 
-	float** new_tableau;
-	new_tableau = (float **) malloc(num_rows*num_cols*sizeof(float));
+	float* flat_tableau;
+	flat_tableau = (float *) malloc(num_rows*num_cols*sizeof(float));
 	for (int i = 0; i < num_rows; i++) {
 		for (int j = 0; j < num_cols; j++) {
-			new_tableau[i][j] = tableau[i][j];
+			flat_tableau[i*num_cols + j] = tableau[i][j];
 		}
 	}
 
-	tableau = new_tableau;
-
 	//Cuda Pointer and mem
-	float** cuda_tableau;
+	float* cuda_tableau;
 
 	//Make device space
 	if (cudaMalloc((void**)&cuda_tableau, num_rows*num_cols*sizeof(float)) != cudaSuccess) {
@@ -59,19 +57,26 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
         exit(1);
 	}
 
+	// Copy over tableau
+	if (cudaMemcpy(cuda_tableau, flat_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
+		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "Failed on first tableau copy" << std::endl;
+        exit(1);
+	}
+
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
 	int pivot_col, pivot_row;
 	for (;;) {
-		float min_val = tableau[0][0];
+		float min_val = flat_tableau[0];
 		pivot_col = 0;
 		for (int i = 0; (i < num_cols-1); i++){
-			if (tableau[0][i] < min_val) {
-				min_val = tableau[0][i];
+			if (flat_tableau[i] < min_val) {
+				min_val = flat_tableau[0][i];
 				pivot_col = i;
 			}
 		}
-		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
+		for (pivot_row = 1; (pivot_row < num_rows) && (flat_tableau[pivot_row*num_cols + pivot_col] <= 0); pivot_row++);
 		if (min_val >= 0) {
 			break;
 		}
@@ -81,8 +86,8 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 			return Simplex_Solution();
 		}
 		for (int i = pivot_row+1; i < num_rows; i++) {
-			if (tableau[i][pivot_col] > 0) {
-				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col]) {
+			if (flat_tableau[i*num_cols + pivot_col] > 0) {
+				if (flat_tableau[i*num_cols + num_cols-1]/flat_tableau[i*num_cols + pivot_col] < flat_tableau[pivot_row*num_cols + num_cols-1]/flat_tableau[pivot_row*num_cols + pivot_col]) {
 					pivot_row = i;
 				}
 			}
@@ -93,7 +98,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		std::cout << "pivot_row: " << pivot_row << std::endl;
 		std::cout << "pivot_col: " << pivot_col << std::endl;
 		std::cout << "AFTER PIVOT" << std::endl;
-		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau, cuda_tableau);
+		pivot(pivot_row, pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
 		print_matrix(num_rows, num_cols, tableau);
 	}
 
@@ -110,7 +115,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 
 void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
                             const int& num_rows, const int& num_cols,
-                            float** tableau, float** cuda_tableau)
+                            float* tableau, float* cuda_tableau)
 {
 	// Cuda Pointers
 	if (cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice) != cudaSuccess) {
@@ -163,9 +168,9 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	}
 
 	// Scale the pivot row
-	float pivot_val = tableau[pivot_row][pivot_col];
+	float pivot_val = tableau[pivot_row*num_cols + pivot_col];
 	for (int col = 0; col < num_cols; col++) {
-		tableau[pivot_row][col] /= pivot_val;
+		tableau[pivot_row*num_cols + col] /= pivot_val;
 	}
 }
 
