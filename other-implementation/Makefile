@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 # VARIABLES DEFINITIONS
 
-CC = g++
+CC = /usr/local/cuda-4.2/bin/nvcc
 NVCC = /usr/local/cuda-4.2/bin/nvcc
 CCOPTS = -O3 $(addprefix -I, $(SRCDIRS))
 CUOPTS = -g -O3 $(addprefix -I, $(SRCDIRS))
