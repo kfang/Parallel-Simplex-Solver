@@ -11,6 +11,7 @@
 #include "simplex_problem.h"
 #include "simplex_solution.h"
 #include "serial_simplex_solver.h"
+#include "cuda_simplex_solver.h"
 
 //--------------------------------------------------------------------------
 // CREATE_SOLVER
@@ -33,7 +34,7 @@ Simplex_Solver* create_solver(Configuration_Options& config_opts)
 
 	// Build a CUDA solver.
 	else if (solver_type == "cuda") {
-		solver = new Serial_Simplex_Solver();
+		solver = new Cuda_Simplex_Solver();
 	}
 
 	// Build an OMP solver.
