@@ -70,14 +70,9 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 			std::cout << "The problem is unbounded\n";
 			return Simplex_Solution();
 		}
-		std::cout << "before col: " << pivot_col << std::endl;
-		std::cout << "before row: " << pivot_row << std::endl;
 		for (int i = pivot_row+1; i < num_rows; i++) {
-			std::cout << "start i = " << i << std::endl;
 			if (tableau[i][pivot_col] > 0) {
-				std::cout << "inside if" << std::endl;
 				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col]) {
-					std::cout << "inside if 2" << std::endl;
 					pivot_row = i;
 				}
 			}
