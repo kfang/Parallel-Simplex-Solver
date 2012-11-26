@@ -39,6 +39,16 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_rows = num_constraints + 1;
 	int num_cols = num_variables + num_constraints + 1;
 
+	float** new_tableau;
+	new_tableau = (float **) malloc(num_rows*num_cols*sizeof(float));
+	for (int i = 0; i < num_rows; i++) {
+		for (int j = 0; j < num_cols; j++) {
+			new_tableau[i][j] = tableau[i][j];
+		}
+	}
+
+	tableau = new_tableau;
+
 	//Cuda Pointer and mem
 	float** cuda_tableau;
 
