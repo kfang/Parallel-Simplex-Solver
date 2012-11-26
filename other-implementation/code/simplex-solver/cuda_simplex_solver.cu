@@ -72,11 +72,16 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		}
 		std::cout << "before col: " << pivot_col << std::endl;
 		std::cout << "before row: " << pivot_row << std::endl;
-		for (int i = pivot_row+1; i < num_rows; i++)
-			if (tableau[i][pivot_col] > 0)
-				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
+		for (int i = pivot_row+1; i < num_rows; i++) {
+			std::cout << "start i = " << i << std::endl;
+			if (tableau[i][pivot_col] > 0) {
+				std::cout << "inside if" << std::endl;
+				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col]) {
+					std::cout << "inside if 2" << std:endl;
 					pivot_row = i;
-		std::cout << "Pivot row value is: " << tableau[pivot_row][pivot_col] << std::endl;
+				}
+			}
+		}
 		std::cout << "---------------------------------" << std::endl;
 		std::cout << "BEFORE PIVOT" << std::endl;
 		print_matrix(num_rows, num_cols, tableau);
