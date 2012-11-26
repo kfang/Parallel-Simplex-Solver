@@ -10,6 +10,7 @@
 #include "simplex_problem.h"
 #include "simplex_solution.h"
 #include "util.h"
+#include "omp.h"
 
 //--------------------------------------------------------------------------
 // CONSTRUCTORS AND DESTRUCTOR
@@ -65,12 +66,12 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 					pivot_row = i;
 		std::cout << "---------------------------------" << std::endl;
 		std::cout << "BEFORE PIVOT" << std::endl;
-		print_matrix(num_rows, num_cols, tableau);
+		//print_matrix(num_rows, num_cols, tableau);
 		std::cout << "pivot_row: " << pivot_row << std::endl;
 		std::cout << "pivot_col: " << pivot_col << std::endl;
 		std::cout << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
-		print_matrix(num_rows, num_cols, tableau);
+		//print_matrix(num_rows, num_cols, tableau);
 	}
 
 	std::cout << "DONE!!!" << std::endl;
@@ -94,6 +95,8 @@ void Omp_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	{
 	#pragma omp for
 	for (int row = 0; row < num_rows; row++) {
+		int id = omp_get_thread_num();
+		std::cout << "This is thread: " << id << std::endl;
 		float scale = tableau[row][pivot_col]/pivot_val;
 		if (row != pivot_row) {
 			for (int col = 0; col < num_cols; col++) {

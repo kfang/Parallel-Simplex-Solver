@@ -17,7 +17,7 @@ OBJDIR = obj
 
 TARGETS = simplex
 OBJS = ${CPPFILES:%.cpp=%.o} ${CUDAFILES:%.cu=%.o}
-LIBS = -lboost_regex
+LIBS = -lboost_regex -fopenmp -lm
 LIBDIRS = -L ../lib -L $(OBJDIR) 
 
 #---------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
+#include
 
 #include "cmd_line_parser.h"
 #include "cmd_line_options.h"
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
 		Simplex_Problem problem = input_file_parser->parse(input_file);
 
 		// TODO get rid of this print statement
-		//problem.print();
+		std::cout << "Done parsing, starting to solve" << std::endl;
 
 		// Find a solution to the problem.
 		Simplex_Solution solution = solver->solve(problem);
