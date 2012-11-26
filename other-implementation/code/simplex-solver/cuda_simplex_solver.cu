@@ -226,7 +226,6 @@ __global__ void cuda_pivot(int pivot_row, int pivot_col,
 
 	// Calculate new value in tableau
 	if (row != pivot_row) {
-		float pivot_val = tableau[pivot_row][pivot_col];
 		float scale = tableau[row][pivot_col]/pivot_val;
 		tableau[row][col] -= scale*tableau[pivot_row][col];
 	}
