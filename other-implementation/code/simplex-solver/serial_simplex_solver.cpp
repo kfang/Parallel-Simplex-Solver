@@ -42,6 +42,7 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	// vertex on the simplex.
 	int pivot_col, pivot_row;
 	for (;;) {
+		/*
 		float min_val = tableau[0][0];
 		pivot_col = 0;
 		for (int i = 0; (i < num_cols-1); i++){
@@ -50,8 +51,10 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 				pivot_col = i;
 			}
 		}
+		*/
+		for (pivot_col = 0; (pivot_col < num_cols-1) && (tableau[0][pivot_col] >= 0); pivot_col++);
 		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
-		if (min_val >= 0) {
+		if (pivot_col >= num_cols-1) {
 			break;
 		}
 		if (pivot_row >= num_rows) {
