@@ -25,6 +25,7 @@ LIBDIRS = -L ../lib -L $(OBJDIR)
 
 vpath %.h $(SRCDIRS)
 vpath %.cpp $(SRCDIRS)
+vpath %.cu $(SRCDIRS)
 vpath %.o $(OBJDIR)
 
 #---------------------------------------------------------------------------
