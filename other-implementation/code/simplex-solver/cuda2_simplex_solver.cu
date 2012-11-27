@@ -147,7 +147,6 @@ void Cuda2_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	}
 
 	// Scale the pivot row
-	float pivot_val = tableau[pivot_row][pivot_col];
 	for (int col = 0; col < num_cols; col++) {
 		tableau[pivot_row][col] /= pivot_val;
 	}
