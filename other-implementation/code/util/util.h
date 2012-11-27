@@ -8,6 +8,9 @@
 #include <iostream>
 #include <cstdio>
 #include <cassert>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
 
 //--------------------------------------------------------------------------
 // CREATE_2D_ARRAY
