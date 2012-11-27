@@ -36,8 +36,8 @@ private:
 	                                float** tableau,
 	                                Simplex_Problem& problem);
 	void pivot(const int& pivot_row, const int& pivot_col,
-	           const int& num_rows, const int& num_cols,
-	           float* tableau, float* cuda_tableau);
+                            const int& num_rows, const int& num_cols,
+                            float** tableau, float* cuda_row, float* cuda_pivot_row)
 };
 
 #endif /* CUDA2_SIMPLEX_SOLVER_H_ */

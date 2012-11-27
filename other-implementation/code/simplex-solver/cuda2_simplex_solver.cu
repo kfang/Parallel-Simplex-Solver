@@ -123,7 +123,7 @@ void Cuda2_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 
 	float pivot_val = tableau[pivot_row][pivot_col];
 
-	for(int i = 0; i < num_rows; i++ {
+	for(int i = 0; i < num_rows; i++) {
 		if (i != pivot_row) {
 			// Copy over row
 			if (cudaMemcpy(cuda_row, tableau[i], num_cols*sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
