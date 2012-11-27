@@ -39,6 +39,8 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_rows = num_constraints + 1;
 	int num_cols = num_variables + num_constraints + 1;
 
+	double time = timestamp();
+
 	float* flat_tableau;
 	flat_tableau = (float *) malloc(num_rows*num_cols*sizeof(float));
 	for (int i = 0; i < num_rows; i++) {
@@ -106,8 +108,13 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	cudaFree(cuda_tableau);
 
-	std::cout << "DONE!!!" << std::endl;
-	std::cout << "Max value: " << flat_tableau[num_cols-1] << std::endl;
+	time = timestamp() - time;
+	std::cerr << "Solve time: " << time << std::endl;
+
+	std::cerr << "DONE!!!" << std::endl;
+	std::cerr << "Max value: " << flat_tableau[num_cols-1] << std::endl;
+
+	std::cout << num_variables << "," << time << std::endl;
 
 	return Simplex_Solution();
 }
