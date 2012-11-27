@@ -84,14 +84,14 @@ Simplex_Solution Cuda2_Simplex_Solver::solve(Simplex_Problem& problem)
 			if (tableau[i][pivot_col] > 0)
 				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
 					pivot_row = i;
-		std::cerr << "---------------------------------" << std::endl;
-		std::cerr << "BEFORE PIVOT" << std::endl;
-		print_matrix(num_rows, num_cols, tableau);
-		std::cerr << "pivot_row: " << pivot_row << std::endl;
-		std::cerr << "pivot_col: " << pivot_col << std::endl;
-		std::cerr << "AFTER PIVOT" << std::endl;
+		//std::cerr << "---------------------------------" << std::endl;
+		//std::cerr << "BEFORE PIVOT" << std::endl;
+		//print_matrix(num_rows, num_cols, tableau);
+		//std::cerr << "pivot_row: " << pivot_row << std::endl;
+		//std::cerr << "pivot_col: " << pivot_col << std::endl;
+		//std::cerr << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau, cuda_row, cuda_pivot_row);
-		print_matrix(num_rows, num_cols, tableau);
+		//print_matrix(num_rows, num_cols, tableau);
 	}
 
 	cudaFree(cuda_row);
