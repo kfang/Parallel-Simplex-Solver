@@ -94,13 +94,14 @@ Simplex_Solution Cuda2_Simplex_Solver::solve(Simplex_Problem& problem)
 		print_matrix(num_rows, num_cols, tableau);
 	}
 
-	cudaFree(cuda_tableau);
+	cudaFree(cuda_row);
+	cudaFree(cuda_pivot_row);
 
 	time = timestamp() - time;
 	std::cerr << "Solve time: " << time << std::endl;
 
 	std::cerr << "DONE!!!" << std::endl;
-	std::cerr << "Max value: " << flat_tableau[num_cols-1] << std::endl;
+	std::cerr << "Max value: " << tableau[0][num_cols-1] << std::endl;
 
 	std::cout << num_variables << "," << time << std::endl;
 
