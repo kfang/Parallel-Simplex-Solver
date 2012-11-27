@@ -28,10 +28,9 @@ Cuda_Simplex_Solver::~Cuda_Simplex_Solver(void)
 
 Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 {
-	std::cerr << "starting" << std::endl;
 	// Make a new tableau for solving the problem.
 	float** tableau = create_tableau(problem);
-	std::cerr << "Seg f?" << std::endl;
+
 	// Get the number of variables and constraints in the problem.
 	int num_variables = problem.get_num_variables();
 	int num_constraints = problem.get_num_constraints();
@@ -41,7 +40,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_cols = num_variables + num_constraints + 1;
 
 	double time = timestamp();
-	std::cerr << "before copy" << std::endl;
+
 	float* flat_tableau;
 	flat_tableau = (float *) malloc(num_rows*num_cols*sizeof(float));
 	for (int i = 0; i < num_rows; i++) {
@@ -49,7 +48,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 			flat_tableau[i*num_cols + j] = tableau[i][j];
 		}
 	}
-	std::cerr << "after copy" << std::endl;
+
 	//Cuda Pointer and mem
 	float* cuda_tableau;
 
