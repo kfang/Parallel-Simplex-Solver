@@ -29,6 +29,7 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 {
 	//omp_set_num_threads(8);
+	double time = timestamp();
 
 	// Make a new tableau for solving the problem.
 	float** tableau = create_tableau(problem);
@@ -40,6 +41,8 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 	// Calculate the number of rows and columns in the tableau and allocate memory.
 	int num_rows = num_constraints + 1;
 	int num_cols = num_variables + num_constraints + 1;
+	time = timestamp() - time;
+	std::cout << "Setup time: " << time << std::endl;
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
@@ -78,6 +81,9 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	std::cout << "DONE!!!" << std::endl;
 	std::cout << "Max value: " << tableau[0][num_cols-1] << std::endl;
+
+	time = timestamp() - time;
+	std::cout << "Solve time: " << time << std::endl;
 
 	return Simplex_Solution();
 }
