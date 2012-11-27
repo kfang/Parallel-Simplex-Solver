@@ -28,9 +28,10 @@ Cuda_Simplex_Solver::~Cuda_Simplex_Solver(void)
 
 Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 {
+	std::cerr << "starting" << std::endl;
 	// Make a new tableau for solving the problem.
 	float** tableau = create_tableau(problem);
-
+	std::cerr << "Seg f?" << std::endl;
 	// Get the number of variables and constraints in the problem.
 	int num_variables = problem.get_num_variables();
 	int num_constraints = problem.get_num_constraints();
@@ -40,7 +41,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_cols = num_variables + num_constraints + 1;
 
 	double time = timestamp();
-
+	std::cerr << "before copy" << std::endl;
 	float* flat_tableau;
 	flat_tableau = (float *) malloc(num_rows*num_cols*sizeof(float));
 	for (int i = 0; i < num_rows; i++) {
@@ -48,7 +49,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 			flat_tableau[i*num_cols + j] = tableau[i][j];
 		}
 	}
-
+	std::cerr << "after copy" << std::endl;
 	//Cuda Pointer and mem
 	float* cuda_tableau;
 
@@ -94,14 +95,14 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 				}
 			}
 		}
-		std::cout << "---------------------------------" << std::endl;
-		std::cout << "BEFORE PIVOT" << std::endl;
+		std::cerr << "---------------------------------" << std::endl;
+		std::cerr << "BEFORE PIVOT" << std::endl;
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
-		std::cout << "pivot_row: " << pivot_row << std::endl;
-		std::cout << "pivot_col: " << pivot_col << std::endl;
-		std::cout << "pivot col value: " << flat_tableau[pivot_col] << std::endl;
-		std::cout << "pivot val: " << flat_tableau[pivot_row*num_cols + pivot_col] << std::endl;
-		std::cout << "AFTER PIVOT" << std::endl;
+		std::cerr << "pivot_row: " << pivot_row << std::endl;
+		std::cerr << "pivot_col: " << pivot_col << std::endl;
+		std::cerr << "pivot col value: " << flat_tableau[pivot_col] << std::endl;
+		std::cerr << "pivot val: " << flat_tableau[pivot_row*num_cols + pivot_col] << std::endl;
+		std::cerr << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
