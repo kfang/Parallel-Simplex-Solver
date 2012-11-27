@@ -16,9 +16,9 @@ CUDAFILES = $(shell for x in `find code/ -name '*.cu'`; do echo `basename $$x`; 
 OBJDIR = obj
 
 TARGETS = simplex
-#OBJS = ${CPPFILES:%.cpp=%.o} ${CUDAFILES:%.cu=%.o}
-OBJS = ${CPPFILES:%.cpp=%.o}
-LIBS = -lboost_regex -fopenmp -lm
+OBJS = ${CPPFILES:%.cpp=%.o} ${CUDAFILES:%.cu=%.o}
+#OBJS = ${CPPFILES:%.cpp=%.o}
+LIBS = -lboost_regex
 LIBDIRS = -L ../lib -L $(OBJDIR) 
 
 #---------------------------------------------------------------------------
@@ -38,7 +38,7 @@ all: $(TARGETS)
 
 simplex: $(OBJS)
 	@echo linking $(OBJS) $(LIBS)
-	@cd $(OBJDIR); $(CC) $(CCOPTS) $(OBJS) $(LIBDIRS) $(LIBS) -o ../$@
+	@cd $(OBJDIR); $(NVCC) $(CCOPTS) $(OBJS) $(LIBDIRS) $(LIBS) -o ../$@
 
 %.o: %.cpp
 	@echo compiling $<...
