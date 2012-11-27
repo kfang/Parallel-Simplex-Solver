@@ -35,7 +35,7 @@ Simplex_Solver* create_solver(Configuration_Options& config_opts)
 
 	// Build a CUDA solver.
 	else if (solver_type == "cuda") {
-		//solver = new Cuda_Simplex_Solver();
+		solver = new Cuda_Simplex_Solver();
 	}
 
 	// Build an OMP solver.
