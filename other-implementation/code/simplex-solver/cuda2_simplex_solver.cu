@@ -41,44 +41,37 @@ Simplex_Solution Cuda2_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	double time = timestamp();
 
-	float* flat_tableau;
-	flat_tableau = (float *) malloc(num_rows*num_cols*sizeof(float));
-	for (int i = 0; i < num_rows; i++) {
-		for (int j = 0; j < num_cols; j++) {
-			flat_tableau[i*num_cols + j] = tableau[i][j];
-		}
-	}
-
 	//Cuda Pointer and mem
-	float* cuda_tableau;
+	float* cuda_row;
+	float* cuda_pivot_row;
 
 	//Make device space
-	if (cudaMalloc((void**)&cuda_tableau, num_rows*num_cols*sizeof(float)) != cudaSuccess) {
+	if (cudaMalloc((void**)&cuda_row, num_cols*sizeof(float)) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 		std::cerr << "First Malloc Failed" << std::endl;
         exit(1);
 	}
-
-	// Copy over tableau
-	if (cudaMemcpy(cuda_tableau, flat_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
+	if (cudaMalloc((void**)&cuda_pivot_row, num_cols*sizeof(float)) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed on first tableau copy" << std::endl;
+		std::cerr << "Second Malloc Failed" << std::endl;
         exit(1);
 	}
+
+
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
 	int pivot_col, pivot_row;
 	for (;;) {
-		float min_val = flat_tableau[0];
+		float min_val = tableau[0][0];
 		pivot_col = 0;
 		for (int i = 0; (i < num_cols-1); i++){
-			if (flat_tableau[i] < min_val) {
-				min_val = flat_tableau[i];
+			if (tableau[0][i] < min_val) {
+				min_val = tableau[0][i];
 				pivot_col = i;
 			}
 		}
-		for (pivot_row = 1; (pivot_row < num_rows) && (flat_tableau[pivot_row*num_cols + pivot_col] <= 0); pivot_row++);
+		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
 		if (min_val >= 0) {
 			break;
 		}
@@ -87,23 +80,18 @@ Simplex_Solution Cuda2_Simplex_Solver::solve(Simplex_Problem& problem)
 			std::cout << "The problem is unbounded\n";
 			return Simplex_Solution();
 		}
-		for (int i = pivot_row+1; i < num_rows; i++) {
-			if (flat_tableau[i*num_cols + pivot_col] > 0) {
-				if (flat_tableau[i*num_cols + num_cols-1]/flat_tableau[i*num_cols + pivot_col] < flat_tableau[pivot_row*num_cols + num_cols-1]/flat_tableau[pivot_row*num_cols + pivot_col]) {
+		for (int i = pivot_row+1; i < num_rows; i++)
+			if (tableau[i][pivot_col] > 0)
+				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
 					pivot_row = i;
-				}
-			}
-		}
-		//std::cerr << "---------------------------------" << std::endl;
-		//std::cerr << "BEFORE PIVOT" << std::endl;
-		//print_flat_matrix(num_rows, num_cols, flat_tableau);
-		//std::cerr << "pivot_row: " << pivot_row << std::endl;
-		//std::cerr << "pivot_col: " << pivot_col << std::endl;
-		//std::cerr << "pivot col value: " << flat_tableau[pivot_col] << std::endl;
-		//std::cerr << "pivot val: " << flat_tableau[pivot_row*num_cols + pivot_col] << std::endl;
-		//std::cerr << "AFTER PIVOT" << std::endl;
-		pivot(pivot_row, pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
-		//print_flat_matrix(num_rows, num_cols, flat_tableau);
+		std::cerr << "---------------------------------" << std::endl;
+		std::cerr << "BEFORE PIVOT" << std::endl;
+		print_matrix(num_rows, num_cols, tableau);
+		std::cerr << "pivot_row: " << pivot_row << std::endl;
+		std::cerr << "pivot_col: " << pivot_col << std::endl;
+		std::cerr << "AFTER PIVOT" << std::endl;
+		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau, cuda_row, cuda_pivot_row);
+		print_matrix(num_rows, num_cols, tableau);
 	}
 
 	cudaFree(cuda_tableau);
@@ -124,46 +112,45 @@ Simplex_Solution Cuda2_Simplex_Solver::solve(Simplex_Problem& problem)
 
 void Cuda2_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
                             const int& num_rows, const int& num_cols,
-                            float* tableau, float* cuda_tableau)
+                            float** tableau, float* cuda_row, float* cuda_pivot_row)
 {
-	/*
-	// Copy to device
-	if (cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice) != cudaSuccess) {
+	// Copy over pivot_row
+	if (cudaMemcpy(cuda_pivot_row, tableau[pivot_row], num_cols*sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed to copy tableau" << std::endl;
-        exit(1);
-	}
-	*/
-
-	// Do Pivot
-	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
-	if (cudaGetLastError() != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Kernel Failed" << std::endl;
-        exit(1);
+		std::cerr << "Failed to copy row" << std::endl;
+	exit(1);
 	}
 
-	//cudaThreadSynchronize();
+	float pivot_val = tableau[pivot_row][pivot_col];
 
-	// Copy back
-	if (cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed to copy back" << std::endl;
-        exit(1);
+	for(int i = 0; i < num_rows; i++ {
+		if (i != pivot_row) {
+			// Copy over row
+			if (cudaMemcpy(cuda_row, tableau[i], num_cols*sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
+				std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+				std::cerr << "Failed to copy row" << std::endl;
+			exit(1);
+			}
+
+			float scale = tableau[i][pivot_col]/pivot_val;
+
+			cuda_pivot <<<(num_cols+127)/128, 128>>> (num_cols, scale, cuda_row, cuda_pivot_row);
+
+			// Copy back
+			if (cudaMemcpy(tableau[i], cuda_row, num_cols*sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
+				std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+				std::cerr << "Failed to copy back" << std::endl;
+				exit(1);
+			}
+		}
 	}
 
 	// Scale the pivot row
-	float pivot_val = tableau[pivot_row*num_cols + pivot_col];
+	float pivot_val = tableau[pivot_row][pivot_col];
 	for (int col = 0; col < num_cols; col++) {
-		tableau[pivot_row*num_cols + col] /= pivot_val;
+		tableau[pivot_row][col] /= pivot_val;
 	}
-	
-	// Copy to device
-	if (cudaMemcpy((cuda_tableau + (pivot_row*num_cols)), (tableau + (pivot_row*num_cols)), num_cols*sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed to copy tableau" << std::endl;
-        exit(1);
-	}
+
 }
 
 
