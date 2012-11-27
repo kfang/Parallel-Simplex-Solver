@@ -12,6 +12,7 @@
 #include "simplex_solution.h"
 #include "serial_simplex_solver.h"
 #include "cuda_simplex_solver.h"
+#include "cuda2_simplex_solver.h"
 #include "omp_simplex_solver.h"
 
 //--------------------------------------------------------------------------
