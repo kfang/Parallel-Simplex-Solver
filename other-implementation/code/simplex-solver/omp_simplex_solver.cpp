@@ -28,7 +28,7 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 
 Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 {
-	for (int var = 0; var < 16; var++) {
+	for (int var = 1; var <= 16; var+=15) {
 		omp_set_num_threads(var);
 		double time = timestamp();
 
