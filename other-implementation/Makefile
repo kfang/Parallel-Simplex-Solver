@@ -7,7 +7,7 @@
 
 CC = g++
 NVCC = /usr/local/cuda-4.2/bin/nvcc
-CCOPTS = -O3 -fopenmp -lm $(addprefix -I, $(SRCDIRS))
+CCOPTS = -O3 $(addprefix -I, $(SRCDIRS))
 CUOPTS = -g -O3 $(addprefix -I, $(SRCDIRS))
 
 SRCDIRS = $(shell find code/ -type d)
