@@ -15,6 +15,7 @@
 #include "simplex_problem.h"
 #include "simplex_solution.h"
 #include "simplex_solver.h"
+#include "util.h"
 
 int main(int argc, char** argv)
 {
@@ -35,7 +36,11 @@ int main(int argc, char** argv)
 	for (int i = 0; i < cmd_line_opts.input_files.size(); i++) {
 		// Parse the current input file and build a problem instance.
 		char* input_file = cmd_line_opts.input_files[i];
+		double time = timestamp();
+
 		Simplex_Problem problem = input_file_parser->parse(input_file);
+		time = timestamp() - time();
+		std::cout << "Parsing time: " << time << std::endl;
 
 		// TODO get rid of this print statement
 		std::cout << "Done parsing, starting to solve" << std::endl;

@@ -43,6 +43,7 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_cols = num_variables + num_constraints + 1;
 	time = timestamp() - time;
 	std::cout << "Setup time: " << time << std::endl;
+	time = timestamp();
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
