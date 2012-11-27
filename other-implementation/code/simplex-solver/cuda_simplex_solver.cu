@@ -94,14 +94,14 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 				}
 			}
 		}
-		std::cerr << "---------------------------------" << std::endl;
-		std::cerr << "BEFORE PIVOT" << std::endl;
+		//std::cerr << "---------------------------------" << std::endl;
+		//std::cerr << "BEFORE PIVOT" << std::endl;
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
-		std::cerr << "pivot_row: " << pivot_row << std::endl;
-		std::cerr << "pivot_col: " << pivot_col << std::endl;
-		std::cerr << "pivot col value: " << flat_tableau[pivot_col] << std::endl;
-		std::cerr << "pivot val: " << flat_tableau[pivot_row*num_cols + pivot_col] << std::endl;
-		std::cerr << "AFTER PIVOT" << std::endl;
+		//std::cerr << "pivot_row: " << pivot_row << std::endl;
+		//std::cerr << "pivot_col: " << pivot_col << std::endl;
+		//std::cerr << "pivot col value: " << flat_tableau[pivot_col] << std::endl;
+		//std::cerr << "pivot val: " << flat_tableau[pivot_row*num_cols + pivot_col] << std::endl;
+		//std::cerr << "AFTER PIVOT" << std::endl;
 		pivot(pivot_row, pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
