@@ -87,7 +87,7 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 		time = timestamp() - time;
 		std::cerr << "Solve time: " << time << std::endl;
 
-		std::cout << num_variables-1 << "," << time << "," << var << std::endl;
+		std::cout << num_variables << "," << time << "," << var << std::endl;
 
 	}
 
