@@ -54,7 +54,7 @@ inline void print_flat_matrix(int num_rows, int num_cols, float* M)
 //--------------------------------------------------------------------------
 // TIMESTAMP
 
-double timestamp(void)
+inline double timestamp(void)
 {
 	struct timeval tv;
 	gettimeofday(&tv, 0);
