@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		double time = timestamp();
 
 		Simplex_Problem problem = input_file_parser->parse(input_file);
-		time = timestamp() - time();
+		time = timestamp() - time;
 		std::cout << "Parsing time: " << time << std::endl;
 
 		// TODO get rid of this print statement
