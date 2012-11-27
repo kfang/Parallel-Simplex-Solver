@@ -26,6 +26,6 @@ __global__ void cuda_pivot(int pivot_row, int pivot_col,
 __global__ void cuda2_pivot(int num_cols, float scale, float* cuda_row, float* cuda_pivot_row) {
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 	if (col < num_cols) {
-		cuda_row[col] -= -1*scale*cuda_pivot_row[col];
+		cuda_row[col] -= scale*cuda_pivot_row[col];
 	}
 }
