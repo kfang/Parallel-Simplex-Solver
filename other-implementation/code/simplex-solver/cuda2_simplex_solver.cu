@@ -135,7 +135,7 @@ void Cuda2_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 
 			float scale = tableau[i][pivot_col]/pivot_val;
 
-			cuda_pivot <<<(num_cols+127)/128, 128>>> (num_cols, scale, cuda_row, cuda_pivot_row);
+			cuda2_pivot <<<(num_cols+127)/128, 128>>> (num_cols, scale, cuda_row, cuda_pivot_row);
 
 			// Copy back
 			if (cudaMemcpy(tableau[i], cuda_row, num_cols*sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
