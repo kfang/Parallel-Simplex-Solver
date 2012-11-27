@@ -85,7 +85,7 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	time = timestamp() - time;
 	std::cerr << "Solve time: " << time << std::endl;
 
-	std::cout << num_cols << "," << time << std::endl;
+	std::cout << num_cols-1 << "," << time << std::endl;
 	return Simplex_Solution();
 }
 
