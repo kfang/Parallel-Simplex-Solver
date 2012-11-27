@@ -28,8 +28,8 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 
 Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 {
-	for (int var = 0; var < 16; var++) {
-		omp_set_num_threads(var);
+	for (int var = 1; var <= 1; var++) {
+		//omp_set_num_threads(var);
 		double time = timestamp();
 
 		// Make a new tableau for solving the problem.
@@ -49,15 +49,9 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 		// While the objective function can be increased, find a better
 		// vertex on the simplex.
 		int pivot_col, pivot_row;
+		float min_val;
 		for (;;) {
-			float min_val = tableau[0][0];
-			pivot_col = 0;
-			for (int i = 0; (i < num_cols-1); i++){
-				if (tableau[0][i] < min_val) {
-					min_val = tableau[0][i];
-					pivot_col = i;
-				}
-			}
+			pivot_col = choose_col(num_rows, num_cols, tableau, &min_val);
 			for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
 			if (min_val >= 0) {
 				break;
@@ -67,10 +61,7 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 				std::cout << "The problem is unbounded\n";
 				return Simplex_Solution();
 			}
-			for (int i = pivot_row+1; i < num_rows; i++)
-				if (tableau[i][pivot_col] > 0)
-					if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
-						pivot_row = i;
+			pivot_row = choose_row(pivot_row, pivot_col, num_rows, num_cols, tableau);
 			//std::cout << "---------------------------------" << std::endl;
 			//std::cout << "BEFORE PIVOT" << std::endl;
 			//print_matrix(num_rows, num_cols, tableau);
@@ -93,6 +84,35 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	return Simplex_Solution();
 }
+
+//--------------------------------------------------------------------------
+// Choose column
+int Omp_Simplex_Solver::choose_col(const int& num_rows, const int& num_cols,
+                            float** tableau, float* min_val) {
+	*min_val = tableau[0][0];
+	int pivot_col = 0;
+	for (int i = 0; (i < num_cols-1); i++){
+		if (tableau[0][i] < *min_val) {
+			*min_val = tableau[0][i];
+			pivot_col = i;
+		}
+	}
+	return pivot_col;
+}
+
+//--------------------------------------------------------------------------
+// Choose row
+int Omp_Simplex_Solver::choose_row(const int& pivot_row, const int& pivot_col,
+                            const int& num_rows, const int& num_cols,
+                            float** tableau) {
+	int new_pivot_row = pivot_row;
+	for (int i = pivot_row+1; i < num_rows; i++)
+		if (tableau[i][pivot_col] > 0)
+			if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[new_pivot_row][num_cols-1]/tableau[new_pivot_row][pivot_col])
+				new_pivot_row = i;
+	return new_pivot_row;
+}
+
 
 //--------------------------------------------------------------------------
 // PIVOT
