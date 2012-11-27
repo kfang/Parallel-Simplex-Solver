@@ -28,63 +28,68 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 
 Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 {
-	//omp_set_num_threads(8);
-	double time = timestamp();
+	for (int var = 0; var < 16; var++) {
+		omp_set_num_threads(var);
+		double time = timestamp();
 
-	// Make a new tableau for solving the problem.
-	float** tableau = create_tableau(problem);
+		// Make a new tableau for solving the problem.
+		float** tableau = create_tableau(problem);
 
-	// Get the number of variables and constraints in the problem.
-	int num_variables = problem.get_num_variables();
-	int num_constraints = problem.get_num_constraints();
+		// Get the number of variables and constraints in the problem.
+		int num_variables = problem.get_num_variables();
+		int num_constraints = problem.get_num_constraints();
 
-	// Calculate the number of rows and columns in the tableau and allocate memory.
-	int num_rows = num_constraints + 1;
-	int num_cols = num_variables + num_constraints + 1;
-	time = timestamp() - time;
-	std::cout << "Setup time: " << time << std::endl;
-	time = timestamp();
+		// Calculate the number of rows and columns in the tableau and allocate memory.
+		int num_rows = num_constraints + 1;
+		int num_cols = num_variables + num_constraints + 1;
+		time = timestamp() - time;
+		std::cerr << "Setup time: " << time << std::endl;
+		time = timestamp();
 
-	// While the objective function can be increased, find a better
-	// vertex on the simplex.
-	int pivot_col, pivot_row;
-	for (;;) {
-		float min_val = tableau[0][0];
-		pivot_col = 0;
-		for (int i = 0; (i < num_cols-1); i++){
-			if (tableau[0][i] < min_val) {
-				min_val = tableau[0][i];
-				pivot_col = i;
+		// While the objective function can be increased, find a better
+		// vertex on the simplex.
+		int pivot_col, pivot_row;
+		for (;;) {
+			float min_val = tableau[0][0];
+			pivot_col = 0;
+			for (int i = 0; (i < num_cols-1); i++){
+				if (tableau[0][i] < min_val) {
+					min_val = tableau[0][i];
+					pivot_col = i;
+				}
 			}
+			for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
+			if (min_val >= 0) {
+				break;
+			}
+			if (pivot_row >= num_rows) {
+				//Then unbounded
+				std::cout << "The problem is unbounded\n";
+				return Simplex_Solution();
+			}
+			for (int i = pivot_row+1; i < num_rows; i++)
+				if (tableau[i][pivot_col] > 0)
+					if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
+						pivot_row = i;
+			//std::cout << "---------------------------------" << std::endl;
+			//std::cout << "BEFORE PIVOT" << std::endl;
+			//print_matrix(num_rows, num_cols, tableau);
+			//std::cout << "pivot_row: " << pivot_row << std::endl;
+			//std::cout << "pivot_col: " << pivot_col << std::endl;
+			//std::cout << "AFTER PIVOT" << std::endl;
+			pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
+			//print_matrix(num_rows, num_cols, tableau);
 		}
-		for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
-		if (min_val >= 0) {
-			break;
-		}
-		if (pivot_row >= num_rows) {
-			//Then unbounded
-			std::cout << "The problem is unbounded\n";
-			return Simplex_Solution();
-		}
-		for (int i = pivot_row+1; i < num_rows; i++)
-			if (tableau[i][pivot_col] > 0)
-				if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
-					pivot_row = i;
-		//std::cout << "---------------------------------" << std::endl;
-		//std::cout << "BEFORE PIVOT" << std::endl;
-		//print_matrix(num_rows, num_cols, tableau);
-		//std::cout << "pivot_row: " << pivot_row << std::endl;
-		//std::cout << "pivot_col: " << pivot_col << std::endl;
-		//std::cout << "AFTER PIVOT" << std::endl;
-		pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
-		//print_matrix(num_rows, num_cols, tableau);
+
+		std::cerr << "DONE!!!" << std::endl;
+		std::cerr << "Max value: " << tableau[0][num_cols-1] << std::endl;
+
+		time = timestamp() - time;
+		std::cerr << "Solve time: " << time << std::endl;
+
+		std::cout << num_cols << "," << time << "," << var << std::endl;
+
 	}
-
-	std::cout << "DONE!!!" << std::endl;
-	std::cout << "Max value: " << tableau[0][num_cols-1] << std::endl;
-
-	time = timestamp() - time;
-	std::cout << "Solve time: " << time << std::endl;
 
 	return Simplex_Solution();
 }

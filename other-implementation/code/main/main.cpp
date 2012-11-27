@@ -40,10 +40,10 @@ int main(int argc, char** argv)
 
 		Simplex_Problem problem = input_file_parser->parse(input_file);
 		time = timestamp() - time;
-		std::cout << "Parsing time: " << time << std::endl;
+		std::cerr << "Parsing time: " << time << std::endl;
 
 		// TODO get rid of this print statement
-		std::cout << "Done parsing, starting to solve" << std::endl;
+		std::cerr << "Done parsing, starting to solve" << std::endl;
 
 		// Find a solution to the problem.
 		Simplex_Solution solution = solver->solve(problem);

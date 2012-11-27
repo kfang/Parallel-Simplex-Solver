@@ -41,7 +41,7 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_cols = num_variables + num_constraints + 1;
 
 	time = timestamp() - time;
-	std::cout << "Setup time: " << time << std::endl;
+	std::cerr << "Setup time: " << time << std::endl;
 	time = timestamp();
 
 	// While the objective function can be increased, find a better
@@ -79,12 +79,13 @@ Simplex_Solution Serial_Simplex_Solver::solve(Simplex_Problem& problem)
 		//print_matrix(num_rows, num_cols, tableau);
 	}
 
-	std::cout << "DONE!!!" << std::endl;
-	std::cout << "Max value: " << tableau[0][num_cols-1] << std::endl;
+	std::cerr << "DONE!!!" << std::endl;
+	std::cerr << "Max value: " << tableau[0][num_cols-1] << std::endl;
 
 	time = timestamp() - time;
-	std::cout << "Solve time: " << time << std::endl;
+	std::cerr << "Solve time: " << time << std::endl;
 
+	std::cout << num_cols << "," << time << std::endl;
 	return Simplex_Solution();
 }
 
