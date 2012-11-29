@@ -23,6 +23,7 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 {
 }
 
+
 //--------------------------------------------------------------------------
 // SOLVE
 
@@ -49,15 +50,10 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 		// While the objective function can be increased, find a better
 		// vertex on the simplex.
 		int pivot_col, pivot_row;
+		float min_val;
 		for (;;) {
-			float min_val = tableau[0][0];
-			pivot_col = 0;
-			for (int i = 0; (i < num_cols-1); i++){
-				if (tableau[0][i] < min_val) {
-					min_val = tableau[0][i];
-					pivot_col = i;
-				}
-			}
+			min_val = tableau[0][0];
+			get_pivot_col(num_cols, pivot_col, tableau, min_val);
 			for (pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row][pivot_col] <= 0); pivot_row++);
 			if (min_val >= 0) {
 				break;
@@ -67,28 +63,13 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 				std::cout << "The problem is unbounded\n";
 				return Simplex_Solution();
 			}
-			for (int i = pivot_row+1; i < num_rows; i++)
-				if (tableau[i][pivot_col] > 0)
-					if (tableau[i][num_cols-1]/tableau[i][pivot_col] < tableau[pivot_row][num_cols-1]/tableau[pivot_row][pivot_col])
-						pivot_row = i;
-			//std::cout << "---------------------------------" << std::endl;
-			//std::cout << "BEFORE PIVOT" << std::endl;
-			//print_matrix(num_rows, num_cols, tableau);
-			//std::cout << "pivot_row: " << pivot_row << std::endl;
-			//std::cout << "pivot_col: " << pivot_col << std::endl;
-			//std::cout << "AFTER PIVOT" << std::endl;
+			get_pivot_row(num_rows, pivot_col, num_cols, pivot_row,tableau);
+			print_info(true, num_rows, num_cols, pivot_row, pivot_col, tableau);
 			pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
-			//print_matrix(num_rows, num_cols, tableau);
+			print_matrix(num_rows, num_cols, tableau);
 		}
 
-		std::cerr << "DONE!!!" << std::endl;
-		std::cerr << "Max value: " << tableau[0][num_cols-1] << std::endl;
-
-		time = timestamp() - time;
-		std::cerr << "Solve time: " << time << std::endl;
-
-		std::cout << num_variables << "," << time << "," << var << std::endl;
-
+		print_results(num_cols, time, num_variables, var, tableau);
 	}
 
 	return Simplex_Solution();
@@ -123,6 +104,29 @@ void Omp_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 		tableau[pivot_row][col] /= pivot_val;
 	}
 }
+
+//--------------------------------------------------------------------------
+// Get pivot row and column
+
+void Omp_Simplex_Solver::get_pivot_col(int num_cols, int& pivot_col,
+		float** tableau, float& min_val) {
+	pivot_col = 0;
+	for (int i = 0; (i < num_cols - 1); i++) {
+		if (tableau[0][i] < min_val) {
+			min_val = tableau[0][i];
+			pivot_col = i;
+		}
+	}
+}
+
+void Omp_Simplex_Solver::get_pivot_row(int num_rows, int pivot_col, int num_cols,
+		int& pivot_row, float** tableau) {
+	for (int i = pivot_row + 1; i < num_rows; i++)
+		if (tableau[i][pivot_col] > 0)
+			if (tableau[i][num_cols - 1] / tableau[i][pivot_col] < tableau[pivot_row][num_cols - 1]/tableau[pivot_row][pivot_col])
+				pivot_row = i;
+}
+
 
 //--------------------------------------------------------------------------
 // CREATE_TABLEAU
@@ -222,4 +226,25 @@ void Omp_Simplex_Solver::add_constraints_to_tableau(const int& num_rows,
 		// Move to the next constraint.
 		row++;
 	}
+}
+
+void Omp_Simplex_Solver::print_info(bool want_to_print, int num_rows, int num_cols, int pivot_row,
+		int pivot_col, float** tableau) {
+	if (want_to_print) {
+		std::cerr << "---------------------------------" << std::endl;
+		std::cerr << "BEFORE PIVOT" << std::endl;
+		print_matrix(num_rows, num_cols, tableau);
+		std::cerr << "pivot_row: " << pivot_row << std::endl;
+		std::cerr << "pivot_col: " << pivot_col << std::endl;
+		std::cerr << "AFTER PIVOT" << std::endl;
+	}
+}
+
+void Omp_Simplex_Solver::print_results(int num_cols, double time,
+		int num_variables, int var, float** tableau) {
+	std::cerr << "DONE!!!" << std::endl;
+	std::cerr << "Max value: " << tableau[0][num_cols - 1] << std::endl;
+	time = timestamp() - time;
+	std::cerr << "Solve time: " << time << std::endl;
+	std::cout << num_variables << "," << time << "," << var << std::endl;
 }

@@ -38,6 +38,14 @@ private:
 	void pivot(const int& pivot_row, const int& pivot_col,
 	           const int& num_rows, const int& num_cols,
 	           float** tableau);
+	void get_pivot_col(int num_cols, int& pivot_col, float** tableau,
+			float& min_val);
+	void get_pivot_row(int num_rows, int pivot_col, int num_cols, int& pivot_row,
+			float** tableau);
+	void print_info(bool want_to_print, int num_rows, int num_cols, int pivot_row, int pivot_col,
+			float** tableau);
+	void print_results(int num_cols, double time, int num_variables, int var,
+			float** tableau);
 };
 
 
