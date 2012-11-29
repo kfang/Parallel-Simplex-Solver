@@ -1,6 +1,6 @@
 # This is a comment.
 
-solver = cuda2 #omp cuda etc.
+solver = cuda #omp cuda etc.
 problem_file_format = mps
 
 # Example options/settings.
