@@ -141,7 +141,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	cudaThreadSynchronize();
 
 	if (cudaGetLastError() != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << cudaGetLastError() << std::endl;
 		std::cerr << "Kernel Failed" << std::endl;
         exit(1);
 	}
