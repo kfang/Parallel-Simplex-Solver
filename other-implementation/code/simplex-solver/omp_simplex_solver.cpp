@@ -66,7 +66,7 @@ Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 			get_pivot_row(num_rows, pivot_col, num_cols, pivot_row,tableau);
 			print_info(false, num_rows, num_cols, pivot_row, pivot_col, tableau);
 			pivot(pivot_row, pivot_col, num_rows, num_cols, tableau);
-			print_matrix(num_rows, num_cols, tableau);
+			//print_matrix(num_rows, num_cols, tableau);
 		}
 
 		print_results(num_cols, time, num_variables, var, tableau);
