@@ -8,7 +8,7 @@
 CC = g++
 NVCC = /usr/local/cuda-4.2/bin/nvcc
 CCOPTS = -O3 $(addprefix -I, $(SRCDIRS))
-CUOPTS = -g -O3 $(addprefix -I, $(SRCDIRS))
+CUOPTS = -g -O3 -m64 $(addprefix -I, $(SRCDIRS))
 
 SRCDIRS = $(shell find code/ -type d)
 CPPFILES = $(shell for x in `find code/ -name '*.cpp'`; do echo `basename $$x`; done;)
