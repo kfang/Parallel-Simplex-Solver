@@ -137,14 +137,16 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 
 	// Do Pivot
 	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
-	/*
+	
+	cudaThreadSynchronize();
+
 	if (cudaGetLastError() != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 		std::cerr << "Kernel Failed" << std::endl;
         exit(1);
 	}
-	*/
-	cudaThreadSynchronize();
+	
+	
 
 	// Copy back
 	if (cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
