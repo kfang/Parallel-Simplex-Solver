@@ -119,6 +119,9 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	}
 
 	cudaFree(cuda_tableau);
+	cudaFree(d_pivot_row);
+	cudaFree(d_pivot_col);
+	cudaFree(d_done);
 
 	time = timestamp() - time;
 	std::cerr << "Solve time: " << time << std::endl;
