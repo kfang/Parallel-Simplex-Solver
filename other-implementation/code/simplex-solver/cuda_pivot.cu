@@ -38,6 +38,8 @@ __global__ void scale_pivot_row(int pivot_row, int pivot_col, int num_rows, int 
 
 	float pivot_val = tableau[pivot_row*num_cols + col];
 
+	_syncthreads();
+
 	if (col < num_cols) {
 		tableau[pivot_row*num_cols + col] = tableau[pivot_row*num_cols + col] / pivot_val;
 	}
