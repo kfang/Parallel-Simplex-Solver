@@ -68,8 +68,6 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
         exit(1);
 	}
 
-	std::cerr << "Malloc done" << std::endl;
-
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
 	int pivot_col, pivot_row;
