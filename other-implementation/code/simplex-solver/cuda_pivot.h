@@ -10,9 +10,9 @@
 
 __global__ void cuda_pivot(int* pivot_row_loc, int* pivot_col_loc,
 		int num_rows, int num_cols,
-		float* tableau);
+		float* pivot_val, float* tableau);
 
-__global__ void fix_pivot_col(int* pivot_row_loc, int* pivot_col_loc, int num_rows, int num_cols, float* pivot_val, float* tableau);
+__global__ void fix_pivot_col(int* pivot_row_loc, int* pivot_col_loc, int num_rows, int num_cols, float* tableau);
 
 __global__ void scale_pivot_row(int* pivot_row_loc, int* pivot_col_loc, int num_rows, int num_cols, float* pivot_val, float* tableau);
 
