@@ -36,7 +36,7 @@ __global__ void fix_pivot_col(int pivot_row, int pivot_col, int num_rows, int nu
 __global__ void scale_pivot_row(int pivot_row, int pivot_col, int num_rows, int num_cols, float* tableau) {
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	float pivot_val = tableau[pivot_row*num_cols + col];
+	float pivot_val = tableau[pivot_row*num_cols + pivot_col];
 
 	__syncthreads();
 
