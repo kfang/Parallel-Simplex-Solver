@@ -69,11 +69,17 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
-	int d_pivot_col, d_pivot_row;
+	int* d_pivot_col;
+	int* d_pivot_row;
+	bool* d_done;
+
+	cudaMalloc((void**)&d_pivot_col, sizeof(int));
+	cudaMalloc((void**)&d_pivot_row, sizeof(int));
+	cudaMalloc((void**)&d_done, sizeof(bool));
+
 	bool done;
-	bool d_done;
 	for (;;) {
-		find_pivot_row_and_col <<<1, 1>>>(&d_pivot_row, &d_pivot_col, cuda_tableau, num_rows, num_cols, &d_done);
+		find_pivot_row_and_col <<<1, 1>>>(d_pivot_row, d_pivot_col, cuda_tableau, num_rows, num_cols, d_done);
 
 		cudaThreadSynchronize();
 
@@ -83,7 +89,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	        exit(1);
 		}
 
-		if (cudaMemcpy(&done, &d_done, sizeof(bool), cudaMemcpyDeviceToHost) != cudaSuccess) {
+		if (cudaMemcpy(&done, d_done, sizeof(bool), cudaMemcpyDeviceToHost) != cudaSuccess) {
 			std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 			std::cerr << "Failed to copy back boolean" << std::endl;
 	        exit(1);
@@ -99,7 +105,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		//std::cerr << "pivot_row: " << pivot_row << std::endl;
 		//std::cerr << "pivot_col: " << pivot_col << std::endl;
 		//std::cerr << "AFTER PIVOT" << std::endl;
-		pivot(&d_pivot_row, &d_pivot_col, num_rows, num_cols, cuda_tableau);
+		pivot(d_pivot_row, d_pivot_col, num_rows, num_cols, cuda_tableau);
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
 
