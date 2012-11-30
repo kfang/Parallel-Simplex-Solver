@@ -147,7 +147,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	num_blocks = ceil((sqrt(num_blocks)+1)/256);
 	dim3 blocks(num_blocks, num_blocks);
 
-	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
+	cuda_pivot <<< blocks, threads >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
 	
 	cudaThreadSynchronize();
 
