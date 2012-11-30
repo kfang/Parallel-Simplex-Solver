@@ -102,8 +102,8 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		}
 		
 		cudaMemcpy(flat_tableau, cuda_tableau, num_cols*num_rows*sizeof(float), cudaMemcpyDeviceToHost);
-		cudaMemcpy(*pivot_row, d_pivot_row, sizeof(int), cudaMemcpyDeviceToHost);
-		cudaMemcpy(*pivot_col, d_pivot_col, sizeof(int), cudaMemcpyDeviceToHost);
+		cudaMemcpy(&pivot_row, d_pivot_row, sizeof(int), cudaMemcpyDeviceToHost);
+		cudaMemcpy(&pivot_col, d_pivot_col, sizeof(int), cudaMemcpyDeviceToHost);
 
 		std::cerr << "---------------------------------" << std::endl;
 		std::cerr << "BEFORE PIVOT" << std::endl;
