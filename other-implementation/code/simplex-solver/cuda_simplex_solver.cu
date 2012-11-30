@@ -73,7 +73,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	bool done;
 	bool d_done;
 	for (;;) {
-		find_pivot_row_and_col<<<1,1>>>(&d_pivot_row, &d_pivot_col, cuda_tableau, num_rows, num_cols, &d_done);
+		find_pivot_row_and_col <<<1, 1>>>(&d_pivot_row, &d_pivot_col, cuda_tableau, num_rows, num_cols, &d_done);
 
 		cudaThreadSynchronize();
 

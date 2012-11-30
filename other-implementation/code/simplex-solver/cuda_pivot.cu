@@ -53,20 +53,23 @@ __global__ void scale_pivot_row(int* pivot_row_loc, int* pivot_col_loc, int num_
 	}
 }
 
-__global__ void find_pivot_row_and_col(int* pivot_row, int* pivot_col, float* tableau, int num_rows, int num_cols, bool* done) {
+__global__ void find_pivot_row_and_col(int* pivot_row_loc, int* pivot_col_loc, float* tableau, int num_rows, int num_cols, bool* done) {
+	int pivot_row = *pivot_row_loc;
+	int pivot_col = *pivot_col_loc;
+
 	float min_val = tableau[0];
-	*pivot_col = 0;
+	pivot_col = 0;
 	for(int i = 0; (i < num_cols-1); i++) {
 		if (tableau[i] < min_val) {
 			min_val = tableau[i];
-			*pivot_col = i;
+			pivot_col = i;
 		}
 	}
-	for((*pivot_row) = 1; ((*pivot_row) < num_rows) && (tableau[(*pivot_row)*num_cols + (*pivot_col)] <= 0); (*pivot_row)++);
-	for(int i = (*pivot_row)+1; i < num_rows; i++) {
-		if (tableau[i*num_cols + (*pivot_col)] > 0) {
-			if (tableau[i*num_cols + (num_cols -1)]/tableau[i*num_cols + (*pivot_col)] < tableau[(*pivot_row)*num_cols + num_cols-1]/tableau[(*pivot_row)*num_cols + (*pivot_col)]) {
-				(*pivot_row) = i;
+	for(pivot_row = 1; (pivot_row < num_rows) && (tableau[pivot_row*num_cols + pivot_col] <= 0); pivot_row++);
+	for(int i = pivot_row+1; i < num_rows; i++) {
+		if (tableau[i*num_cols + pivot_col] > 0) {
+			if (tableau[i*num_cols + (num_cols -1)]/tableau[i*num_cols + pivot_col] < tableau[pivot_row*num_cols + num_cols-1]/tableau[pivot_row*num_cols + pivot_col]) {
+				pivot_row = i;
 			}
 		}
 	}
