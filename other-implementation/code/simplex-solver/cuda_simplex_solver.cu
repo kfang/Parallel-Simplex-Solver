@@ -71,38 +71,29 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
 	int pivot_col, pivot_row;
+	int d_pivot_col, d_pivot_row;
+	bool done;
+	bool d_done;
 	for (;;) {
-		float min_val = flat_tableau[0];
-		pivot_col = 0;
-		for (int i = 0; (i < num_cols-1); i++){
-			if (flat_tableau[i] < min_val) {
-				min_val = flat_tableau[i];
-				pivot_col = i;
-			}
+		find_pivot_row_and_col<<<1,1>>>(d_pivot_row, d_pivot_col, tableau, num_rows, num_cols, d_done);
+
+		if (cudaMemcpy(&done, d_done, sizeof(bool), cudaMemcpyDeviceToHost) != cudaSuccess) {
+			std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+			std::cerr << "Failed to copy back" << std::endl;
+	        exit(1);
 		}
-		for (pivot_row = 1; (pivot_row < num_rows) && (flat_tableau[pivot_row*num_cols + pivot_col] <= 0); pivot_row++);
-		if (min_val >= 0) {
+
+		if (done) {
 			break;
 		}
-		if (pivot_row >= num_rows) {
-			//Then unbounded
-			std::cout << "The problem is unbounded\n";
-			return Simplex_Solution();
-		}
-		for (int i = pivot_row+1; i < num_rows; i++) {
-			if (flat_tableau[i*num_cols + pivot_col] > 0) {
-				if (flat_tableau[i*num_cols + num_cols-1]/flat_tableau[i*num_cols + pivot_col] < flat_tableau[pivot_row*num_cols + num_cols-1]/flat_tableau[pivot_row*num_cols + pivot_col]) {
-					pivot_row = i;
-				}
-			}
-		}
+
 		//std::cerr << "---------------------------------" << std::endl;
 		//std::cerr << "BEFORE PIVOT" << std::endl;
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 		//std::cerr << "pivot_row: " << pivot_row << std::endl;
 		//std::cerr << "pivot_col: " << pivot_col << std::endl;
 		//std::cerr << "AFTER PIVOT" << std::endl;
-		pivot(pivot_row, pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
+		pivot(&d_pivot_row, &d_pivot_col_loc, num_rows, num_cols, flat_tableau, cuda_tableau);
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
 
