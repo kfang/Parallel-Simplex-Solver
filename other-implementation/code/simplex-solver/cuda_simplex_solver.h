@@ -35,7 +35,7 @@ private:
 	                                const int& num_cols,
 	                                float** tableau,
 	                                Simplex_Problem& problem);
-	void pivot(const int& pivot_row, const int& pivot_col,
+	void pivot(int* pivot_row, int* pivot_col,
 	           const int& num_rows, const int& num_cols,
 	           float* tableau, float* cuda_tableau);
 };

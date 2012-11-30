@@ -75,9 +75,9 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	bool done;
 	bool d_done;
 	for (;;) {
-		find_pivot_row_and_col<<<1,1>>>(&d_pivot_row, &d_pivot_col, tableau, num_rows, num_cols, &d_done);
+		find_pivot_row_and_col<<<1,1>>>(&d_pivot_row, &d_pivot_col, cuda_tableau, num_rows, num_cols, &d_done);
 
-		if (cudaMemcpy(&done, d_done, sizeof(bool), cudaMemcpyDeviceToHost) != cudaSuccess) {
+		if (cudaMemcpy(&done, &d_done, sizeof(bool), cudaMemcpyDeviceToHost) != cudaSuccess) {
 			std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 			std::cerr << "Failed to copy back" << std::endl;
 	        exit(1);
@@ -122,7 +122,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 //--------------------------------------------------------------------------
 // PIVOT
 
-void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
+void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
                             const int& num_rows, const int& num_cols,
                             float* tableau, float* cuda_tableau)
 {
