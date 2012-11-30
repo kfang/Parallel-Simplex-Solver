@@ -149,7 +149,8 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	std::cerr << "Starting pivot" << std::endl;
 	dim3 threads(16,16);
 	int num_blocks = std::max(num_rows, num_cols);
-	num_blocks = ceil((sqrt(num_blocks)+1)/256);
+	std::cerr << "Max: " << num_blocks << std::endl;
+	num_blocks = ceil((sqrt(num_blocks)+1)/16);
 	std::cerr << "Num of blocks: " << num_blocks << std::endl;
 	dim3 blocks(num_blocks, num_blocks);
 
