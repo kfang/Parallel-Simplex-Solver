@@ -12,7 +12,7 @@ __global__ void cuda_pivot(int pivot_row, int pivot_col,
 		int num_rows, int num_cols,
 		float* tableau);
 
-__global__ void fix_pivot_col(int pivot_row, int pivot_col, int num_rows, float* tableau);
+__global__ void fix_pivot_col(int pivot_row, int pivot_col, int num_rows, int num_cols, float* tableau);
 
 __global__ void cuda2_pivot(int num_cols, float scale, float* cuda_row, float* cuda_pivot_row);
 

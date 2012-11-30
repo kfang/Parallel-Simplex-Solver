@@ -19,7 +19,7 @@ __global__ void cuda_pivot(int pivot_row, int pivot_col,
 
 }
 
-__global__ void fix_pivot_col(int pivot_row, int pivot_col, int num_rows, float* tableau) {
+__global__ void fix_pivot_col(int pivot_row, int pivot_col, int num_rows, int num_cols, float* tableau) {
 	int row = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (row < num_rows) {
