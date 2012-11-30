@@ -78,6 +78,8 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	cudaMalloc((void**)&d_done, sizeof(bool));
 
 	bool done;
+	int pivot_row;
+	int pivot_col;
 	for (;;) {
 		find_pivot_row_and_col <<<1, 1>>>(d_pivot_row, d_pivot_col, cuda_tableau, num_rows, num_cols, d_done);
 
@@ -98,15 +100,20 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		if (done) {
 			break;
 		}
+		
+		cudaMemcpy(flat_tableau, cuda_tableau, num_cols*num_rows*sizeof(float), cudaMemcpyDeviceToHost);
+		cudaMemcpy(*pivot_row, d_pivot_row, sizeof(int), cudaMemcpyDeviceToHost);
+		cudaMemcpy(*pivot_col, d_pivot_col, sizeof(int), cudaMemcpyDeviceToHost);
 
-		//std::cerr << "---------------------------------" << std::endl;
-		//std::cerr << "BEFORE PIVOT" << std::endl;
-		//print_flat_matrix(num_rows, num_cols, flat_tableau);
-		//std::cerr << "pivot_row: " << pivot_row << std::endl;
-		//std::cerr << "pivot_col: " << pivot_col << std::endl;
-		//std::cerr << "AFTER PIVOT" << std::endl;
+		std::cerr << "---------------------------------" << std::endl;
+		std::cerr << "BEFORE PIVOT" << std::endl;
+		print_flat_matrix(num_rows, num_cols, flat_tableau);
+		std::cerr << "pivot_row: " << pivot_row << std::endl;
+		std::cerr << "pivot_col: " << pivot_col << std::endl;
+		std::cerr << "AFTER PIVOT" << std::endl;
 		pivot(d_pivot_row, d_pivot_col, num_rows, num_cols, cuda_tableau);
-		//print_flat_matrix(num_rows, num_cols, flat_tableau);
+		cudaMemcpy(flat_tableau, cuda_tableau, num_cols*num_rows*sizeof(float), cudaMemcpyDeviceToHost);
+		print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
 
 	float ans;
