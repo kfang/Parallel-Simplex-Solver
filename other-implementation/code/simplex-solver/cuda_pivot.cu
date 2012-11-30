@@ -11,11 +11,13 @@ __global__ void cuda_pivot(int pivot_row, int pivot_col,
 	int row = blockIdx.x * blockDim.x + threadIdx.x;
 	int col = blockIdx.y * blockDim.y + threadIdx.y;
 
+	/*
 	// Calculate new value in tableau
 	if (row != pivot_row && col != pivot_col) {
 		float scale = tableau[row*num_cols + pivot_col]/pivot_val;
 		tableau[row*num_cols + col] -= scale*tableau[pivot_row*num_cols + col];
 	}
+	*/
 
 }
 
