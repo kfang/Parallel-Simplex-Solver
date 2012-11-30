@@ -33,6 +33,16 @@ __global__ void fix_pivot_col(int pivot_row, int pivot_col, int num_rows, int nu
 	}
 }
 
+__global__ void scale_pivot_row(int pivot_row, int pivot_col, int num_rows, int num_cols, float* tableau) {
+	int col = blockIdx.x * blockDim.x + threadIdx.x;
+
+	float pivot_val = tableau[pivot_row*num_cols + col];
+
+	if (col < num_cols) {
+		tableau[pivot_row*num_cols + col] = tableau[pivot_row*num_cols + col] / pivot_val;
+	}
+}
+
 __global__ void cuda2_pivot(int num_cols, float scale, float* cuda_row, float* cuda_pivot_row) {
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 	if (col < num_cols) {

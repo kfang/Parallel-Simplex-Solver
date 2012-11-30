@@ -106,13 +106,22 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
 
+	float ans;
+
+	// Copy back
+	if (cudaMemcpy(&ans, cuda_tableau + num_cols - 1, sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
+		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "Failed to copy back" << std::endl;
+        exit(1);
+	}
+
 	cudaFree(cuda_tableau);
 
 	time = timestamp() - time;
 	std::cerr << "Solve time: " << time << std::endl;
 
 	std::cerr << "DONE!!!" << std::endl;
-	std::cerr << "Max value: " << flat_tableau[num_cols-1] << std::endl;
+	std::cerr << "Max value: " << ans << std::endl;
 
 	std::cout << num_variables << "," << time << std::endl;
 
@@ -126,20 +135,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
                             const int& num_rows, const int& num_cols,
                             float* tableau, float* cuda_tableau)
 {
-	/*
-	// Copy to device
-	if (cudaMemcpy(cuda_tableau, tableau, num_rows*num_cols, cudaMemcpyHostToDevice) != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed to copy tableau" << std::endl;
-        exit(1);
-	}
-	
-	int *how_far = 0;
-	int *device_how_far;
 
-	cudaMalloc((void**)&device_how_far, sizeof(int));
-	cudaMemcpy(how_far, device_how_far sizeof(int), cudaMemcpyHostToDevice);
-	*/
 
 	// Do Pivot
 	dim3 threads(16,16);
@@ -157,6 +153,16 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
         exit(1);
 	}
 	
+	scale_pivot_row <<< (num_rows+127), 128 >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
+
+	cudaThreadSynchronize();
+
+	if (cudaGetLastError() != cudaSuccess) {
+		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+		std::cerr << "Kernel Failed" << std::endl;
+        exit(1);
+	}
+
 	fix_pivot_col <<< (num_rows+127), 128 >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
 
 	cudaThreadSynchronize();
@@ -174,18 +180,6 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
         exit(1);
 	}
 
-	// Scale the pivot row
-	float pivot_val = tableau[pivot_row*num_cols + pivot_col];
-	for (int col = 0; col < num_cols; col++) {
-		tableau[pivot_row*num_cols + col] /= pivot_val;
-	}
-	
-	// Copy to device
-	if (cudaMemcpy((cuda_tableau + (pivot_row*num_cols)), (tableau + (pivot_row*num_cols)), num_cols*sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed to copy tableau" << std::endl;
-        exit(1);
-	}
 }
 
 
