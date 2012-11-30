@@ -7,6 +7,8 @@
 #include <cstdio>
 #include <string>
 #include <string.h>
+#include <xmmintrin.h>
+#include <mmintrin.h>
 #include "omp_simplex_solver.h"
 #include "simplex_problem.h"
 #include "simplex_solution.h"
@@ -31,7 +33,7 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 {
 	for (int var = 0; var < 3; var++) {
-		omp_set_num_threads(4);
+		omp_set_num_threads(15);
 		double time = timestamp();
 
 		// Make a new tableau for solving the problem.
@@ -87,14 +89,34 @@ void Omp_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	float pivot_val = tableau[pivot_row][pivot_col];
 
 	// Zero out the column above and below the pivot.
-#pragma omp parallel
+	float tableauPivot[num_cols];
+	float pivotValueCopy;
+#pragma omp parallel private(tableauPivot,pivotValueCopy)
 	{
+		memcpy(tableauPivot, tableau[pivot_row], sizeof(float)*num_cols);
+		pivotValueCopy = pivot_val;
 		#pragma omp for
 		for (int row = 0; row < num_rows; row++) {
-			float scale = tableau[row][pivot_col]/pivot_val;
+			float scale = tableau[row][pivot_col]/pivotValueCopy;
 			if (row != pivot_row) {
-				for (int col = 0; col < num_cols; col++) {
-					tableau[row][col] -= scale*tableau[pivot_row][col];
+
+				__m128 s1;
+
+				__m128* currentRow = (__m128*) tableau[row];
+				__m128* pivotRow = (__m128*) tableauPivot;
+				__m128 scaleReg = _mm_set1_ps(scale);
+
+				int loops = num_cols/4;
+				for (int i = 0; i < loops; i++){
+					s1 = _mm_mul_ps(*pivotRow, scaleReg);
+					*currentRow = _mm_sub_ps(*currentRow, s1);
+					currentRow++;
+					pivotRow++;
+				}
+
+				//take care of the rest
+				for (int col = (num_cols - (num_cols % 4)); col < num_cols; col++) {
+					tableau[row][col] -= scale*tableauPivot[col];
 				}
 
 				//----Tried implementing Duff's Device
@@ -112,9 +134,10 @@ void Omp_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	
 
 		// Scale the pivot row.
+		float* pivotRow = tableau[pivot_row];
 		#pragma omp for
 		for (int col = 0; col < num_cols; col++) {
-			tableau[pivot_row][col] /= pivot_val;
+			pivotRow[col] /= pivot_val;
 		}
 	}
 }
