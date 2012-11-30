@@ -153,7 +153,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
         exit(1);
 	}
 	
-	scale_pivot_row <<< (num_rows+127), 128 >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
+	scale_pivot_row <<< (num_cols+127), 128 >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
 
 	cudaThreadSynchronize();
 
