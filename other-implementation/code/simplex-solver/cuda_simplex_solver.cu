@@ -49,6 +49,8 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		}
 	}
 
+	std::cerr << "Setup done" << std::endl;
+
 	//Cuda Pointer and mem
 	float* cuda_tableau;
 
@@ -65,6 +67,8 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		std::cerr << "Failed on first tableau copy" << std::endl;
         exit(1);
 	}
+
+	std::cerr << "Malloc done" << std::endl;
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
@@ -142,6 +146,7 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	*/
 
 	// Do Pivot
+	std::cerr << "Starting pivot" << std::endl;
 	dim3 threads(16,16);
 	int num_blocks = std::max(num_rows, num_cols);
 	num_blocks = ceil((sqrt(num_blocks)+1)/256);
