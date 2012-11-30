@@ -54,8 +54,10 @@ __global__ void scale_pivot_row(int* pivot_row_loc, int* pivot_col_loc, int num_
 }
 
 __global__ void find_pivot_row_and_col(int* pivot_row_loc, int* pivot_col_loc, float* tableau, int num_rows, int num_cols, bool* done) {
-	int pivot_row = *pivot_row_loc;
-	int pivot_col = *pivot_col_loc;
+	int pivot_row;
+	&pivot_row = *pivot_row_loc;
+	int pivot_col;
+	&pivot_col = *pivot_col_loc;
 
 	float min_val = tableau[0];
 	pivot_col = 0;
