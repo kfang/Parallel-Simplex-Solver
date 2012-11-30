@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
+#include <string.h>
 #include "omp_simplex_solver.h"
 #include "simplex_problem.h"
 #include "simplex_solution.h"
@@ -29,8 +30,8 @@ Omp_Simplex_Solver::~Omp_Simplex_Solver(void)
 
 Simplex_Solution Omp_Simplex_Solver::solve(Simplex_Problem& problem)
 {
-	for (int var = 1; var <= 16; var+=15) {
-		omp_set_num_threads(var);
+	for (int var = 0; var < 3; var++) {
+		omp_set_num_threads(4);
 		double time = timestamp();
 
 		// Make a new tableau for solving the problem.
@@ -88,20 +89,33 @@ void Omp_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
 	// Zero out the column above and below the pivot.
 #pragma omp parallel
 	{
-	#pragma omp for
-	for (int row = 0; row < num_rows; row++) {
-		float scale = tableau[row][pivot_col]/pivot_val;
-		if (row != pivot_row) {
-			for (int col = 0; col < num_cols; col++) {
-				tableau[row][col] -= scale*tableau[pivot_row][col];
+		#pragma omp for
+		for (int row = 0; row < num_rows; row++) {
+			float scale = tableau[row][pivot_col]/pivot_val;
+			if (row != pivot_row) {
+				for (int col = 0; col < num_cols; col++) {
+					tableau[row][col] -= scale*tableau[pivot_row][col];
+				}
+
+				//----Tried implementing Duff's Device
+				// int runs = (num_cols + 2)/3;
+				// int col = 0;
+				// switch(num_cols % 3)
+				// {
+				// 	case 0: do { tableau[row][col++] -= scale*tableau[pivot_row][col];
+				// 	case 2: 	 tableau[row][col++] -= scale*tableau[pivot_row][col];
+				// 	case 1: 	 tableau[row][col++] -= scale*tableau[pivot_row][col];
+				// 	} while (--runs >0);
+				// }
 			}
 		}
-	}
-	}
+	
 
-	// Scale the pivot row.
-	for (int col = 0; col < num_cols; col++) {
-		tableau[pivot_row][col] /= pivot_val;
+		// Scale the pivot row.
+		#pragma omp for
+		for (int col = 0; col < num_cols; col++) {
+			tableau[pivot_row][col] /= pivot_val;
+		}
 	}
 }
 
@@ -117,14 +131,55 @@ void Omp_Simplex_Solver::get_pivot_col(int num_cols, int& pivot_col,
 			pivot_col = i;
 		}
 	}
+
+	// -----Parallel find min-----------
+	// float shared_min;
+	// int shared_piv_col;
+	// #pragma omp parallel 
+	// {
+	// 	float min = min_val;
+	// 	int piv_col = 0;
+
+	// 	#pragma omp for nowait
+	// 	for (int i = 0; i < (num_cols - 1); i++){
+	// 		if (tableau[0][i] < min){
+	// 			min = tableau[0][i];
+	// 			piv_col = i;
+	// 		}
+	// 	}
+
+	// 	#pragma omp critical 
+	// 	{
+	// 		if (min < shared_min){
+	// 			shared_min = min;
+	// 			shared_piv_col = piv_col;
+	// 		}
+	// 	}
+	// }
+
+	// min_val = shared_min;
+	// pivot_col = shared_piv_col;
 }
 
 void Omp_Simplex_Solver::get_pivot_row(int num_rows, int pivot_col, int num_cols,
 		int& pivot_row, float** tableau) {
-	for (int i = pivot_row + 1; i < num_rows; i++)
-		if (tableau[i][pivot_col] > 0)
-			if (tableau[i][num_cols - 1] / tableau[i][pivot_col] < tableau[pivot_row][num_cols - 1]/tableau[pivot_row][pivot_col])
+	// for (int i = pivot_row + 1; i < num_rows; i++)
+	// 	if (tableau[i][pivot_col] > 0)
+	// 		if (tableau[i][num_cols - 1] / tableau[i][pivot_col] < tableau[pivot_row][num_cols - 1]/tableau[pivot_row][pivot_col])
+	// 			pivot_row = i;
+
+
+	//---storing ratio explicitly---
+	float minRatio = tableau[pivot_row][num_cols - 1]/tableau[pivot_row][pivot_col];
+	for (int i = pivot_row + 1 ; i < num_rows; i++){
+		if (tableau[i][pivot_col] > 0){
+			float rowRatio = tableau[i][num_cols - 1] / tableau[i][pivot_col];
+			if (rowRatio < minRatio){
 				pivot_row = i;
+				minRatio = rowRatio;
+			}
+		}
+	}
 }
 
 
