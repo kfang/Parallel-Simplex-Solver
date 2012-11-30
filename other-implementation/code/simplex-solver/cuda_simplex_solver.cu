@@ -78,7 +78,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 
 		if (cudaMemcpy(&done, &d_done, sizeof(bool), cudaMemcpyDeviceToHost) != cudaSuccess) {
 			std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-			std::cerr << "Failed to copy back" << std::endl;
+			std::cerr << "Failed to copy back boolean" << std::endl;
 	        exit(1);
 		}
 
@@ -123,7 +123,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 
 void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
                             const int& num_rows, const int& num_cols,
-                            float* tableau, float* cuda_tableau)
+                            float* cuda_tableau)
 {
 
 
@@ -160,13 +160,6 @@ void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
 	if (cudaGetLastError() != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 		std::cerr << "Kernel Failed" << std::endl;
-        exit(1);
-	}
-
-	// Copy back
-	if (cudaMemcpy(tableau, cuda_tableau, num_rows*num_cols*sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess) {
-		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Failed to copy back" << std::endl;
         exit(1);
 	}
 
