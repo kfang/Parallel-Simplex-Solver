@@ -65,9 +65,9 @@ __global__ void find_pivot_row_and_col(int* pivot_row, int* pivot_col, float* ta
 	}
 	for((*pivot_row) = 1; ((*pivot_row) < num_rows) && (tableau[(*pivot_row)*num_cols + (*pivot_col)] <= 0); (*pivot_row)++);
 	for(int i = (*pivot_row)+1; i < num_rows; i++) {
-		if (tableau[i*num_cols + pivot_col] > 0) {
+		if (tableau[i*num_cols + (*pivot_col)] > 0) {
 			if (tableau[i*num_cols + (num_cols -1)]/tableau[i*num_cols + (*pivot_col)] < tableau[(*pivot_row)*num_cols + num_cols-1]/tableau[(*pivot_row)*num_cols + (*pivot_col)]) {
-				pivot_row = i;
+				*pivot_row = i;
 			}
 		}
 	}
