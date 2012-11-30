@@ -77,6 +77,12 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 
 		cudaThreadSynchronize();
 
+		if (cudaGetLastError() != cudaSuccess) {
+			std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+			std::cerr << "Kernel Failed 1" << std::endl;
+	        exit(1);
+		}
+
 		if (cudaMemcpy(&done, &d_done, sizeof(bool), cudaMemcpyDeviceToHost) != cudaSuccess) {
 			std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
 			std::cerr << "Failed to copy back boolean" << std::endl;
@@ -140,7 +146,7 @@ void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
 
 	if (cudaGetLastError() != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Kernel Failed" << std::endl;
+		std::cerr << "Kernel Failed 2" << std::endl;
         exit(1);
 	}
 	
@@ -150,7 +156,7 @@ void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
 
 	if (cudaGetLastError() != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Kernel Failed" << std::endl;
+		std::cerr << "Kernel Failed 3" << std::endl;
         exit(1);
 	}
 
@@ -160,7 +166,7 @@ void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
 
 	if (cudaGetLastError() != cudaSuccess) {
 		std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
-		std::cerr << "Kernel Failed" << std::endl;
+		std::cerr << "Kernel Failed 4" << std::endl;
         exit(1);
 	}
 
