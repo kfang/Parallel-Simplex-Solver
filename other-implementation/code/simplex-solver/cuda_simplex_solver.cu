@@ -72,10 +72,12 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	int* d_pivot_col;
 	int* d_pivot_row;
 	bool* d_done;
+	float* pivot_val;
 
 	cudaMalloc((void**)&d_pivot_col, sizeof(int));
 	cudaMalloc((void**)&d_pivot_row, sizeof(int));
 	cudaMalloc((void**)&d_done, sizeof(bool));
+	cudaMalloc((void**)&pivot_val, sizeof(float));
 
 	bool done;
 	int pivot_row;
@@ -111,7 +113,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		//std::cerr << "pivot_row: " << pivot_row << std::endl;
 		//std::cerr << "pivot_col: " << pivot_col << std::endl;
 		//std::cerr << "AFTER PIVOT" << std::endl;
-		pivot(d_pivot_row, d_pivot_col, num_rows, num_cols, cuda_tableau);
+		pivot(d_pivot_row, d_pivot_col, num_rows, num_cols, pivot_val, cuda_tableau);
 		//cudaMemcpy(flat_tableau, cuda_tableau, num_cols*num_rows*sizeof(float), cudaMemcpyDeviceToHost);
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
@@ -146,7 +148,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 
 void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
                             const int& num_rows, const int& num_cols,
-                            float* cuda_tableau)
+                            float* pivot_val, float* cuda_tableau)
 {
 
 
@@ -156,7 +158,7 @@ void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
 	num_blocks = ceil((num_blocks+15)/16);
 	dim3 blocks(num_blocks, num_blocks);
 
-	cuda_pivot <<< blocks, threads >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
+	cuda_pivot <<< blocks, threads >>> (pivot_row, pivot_col, num_rows, num_cols, pivot_val, cuda_tableau);
 	
 	cudaThreadSynchronize();
 
@@ -166,7 +168,7 @@ void Cuda_Simplex_Solver::pivot(int* pivot_row, int* pivot_col,
         exit(1);
 	}
 	
-	scale_pivot_row <<< (num_cols+127), 128 >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
+	scale_pivot_row <<< (num_cols+127), 128 >>> (pivot_row, pivot_col, num_rows, num_cols, pivot_val, cuda_tableau);
 
 	cudaThreadSynchronize();
 

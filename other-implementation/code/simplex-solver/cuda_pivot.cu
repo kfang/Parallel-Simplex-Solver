@@ -3,7 +3,7 @@
 
 __global__ void cuda_pivot(int* pivot_row_loc, int* pivot_col_loc,
 		int num_rows, int num_cols,
-		float* tableau)
+		float* pivot_val, float* tableau)
 {
 	int pivot_row = *pivot_row_loc;
 	int pivot_col = *pivot_col_loc;
@@ -18,6 +18,8 @@ __global__ void cuda_pivot(int* pivot_row_loc, int* pivot_col_loc,
 		if (row != pivot_row && col != pivot_col) {
 			float scale = tableau[row*num_cols + pivot_col]/pivot_val;
 			tableau[row*num_cols + col] -= scale*tableau[pivot_row*num_cols + col];
+		} else if (row == pivot_row && col == pivot_col) {
+			*pivot_val = tableau[row*num_cols + col];
 		}
 	}
 
@@ -36,20 +38,17 @@ __global__ void fix_pivot_col(int* pivot_row_loc, int* pivot_col_loc, int num_ro
 			tableau[row*num_cols + pivot_col] = 0;
 		}
 	}
+
 }
 
-__global__ void scale_pivot_row(int* pivot_row_loc, int* pivot_col_loc, int num_rows, int num_cols, float* tableau) {
+__global__ void scale_pivot_row(int* pivot_row_loc, int* pivot_col_loc, int num_rows, int num_cols, float* pivot_val, float* tableau) {
 	int pivot_row = *pivot_row_loc;
 	int pivot_col = *pivot_col_loc;
 	
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	float pivot_val = tableau[pivot_row*num_cols + pivot_col];
-
-	__syncthreads();
-
 	if (col < num_cols) {
-		tableau[pivot_row*num_cols + col] = tableau[pivot_row*num_cols + col] / pivot_val;
+		tableau[pivot_row*num_cols + col] = tableau[pivot_row*num_cols + col] / (*pivot_val);
 	}
 }
 
@@ -67,7 +66,7 @@ __global__ void find_pivot_row_and_col(int* pivot_row, int* pivot_col, float* ta
 	for(int i = (*pivot_row)+1; i < num_rows; i++) {
 		if (tableau[i*num_cols + (*pivot_col)] > 0) {
 			if (tableau[i*num_cols + (num_cols -1)]/tableau[i*num_cols + (*pivot_col)] < tableau[(*pivot_row)*num_cols + num_cols-1]/tableau[(*pivot_row)*num_cols + (*pivot_col)]) {
-				*pivot_row = i;
+				(*pivot_row) = i;
 			}
 		}
 	}

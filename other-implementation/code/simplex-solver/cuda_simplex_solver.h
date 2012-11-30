@@ -37,7 +37,7 @@ private:
 	                                Simplex_Problem& problem);
 	void pivot(int* pivot_row, int* pivot_col,
 	           const int& num_rows, const int& num_cols,
-	           float* cuda_tableau);
+	           float* pivot_val, float* cuda_tableau);
 };
 
 #endif /* CUDA_SIMPLEX_SOLVER_H_ */
