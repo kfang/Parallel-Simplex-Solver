@@ -134,9 +134,19 @@ void Cuda_Simplex_Solver::pivot(const int& pivot_row, const int& pivot_col,
         exit(1);
 	}
 	*/
+	int *how_far = 0;
+	int *device_how_far;
+
+	cudaMalloc((void**)&device_how_far, sizeof(int));
+	cudaMemcpy(how_far, device_how_far sizeof(int), cudaMemcpyHostToDevice);
 
 	// Do Pivot
-	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau);
+	dim3 threads(16,16);
+	int num_blocks = std::max(num_rows, num_cols);
+	num_blocks = ceil((sqrt(num_blocks)+1)/256);
+	dim3 blocks(num_blocks, num_blocks);
+
+	cuda_pivot <<< num_rows, num_cols >>> (pivot_row, pivot_col, num_rows, num_cols, cuda_tableau, how_far);
 	
 	cudaThreadSynchronize();
 

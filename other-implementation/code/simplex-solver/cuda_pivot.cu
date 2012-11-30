@@ -3,13 +3,13 @@
 
 __global__ void cuda_pivot(int pivot_row, int pivot_col,
 		int num_rows, int num_cols,
-		float* tableau)
+		float* tableau, int* how_far)
 {
 	// Keep the pivot value in a register.
 	float pivot_val = tableau[pivot_row*num_cols + pivot_col];
 
-	int row = blockIdx.x;
-	int col = threadIdx.x;
+	int row = blockIdx.x * blockIdx.x + threadIdx.x;
+	int col = blockIdx.y * blockIdx.y + threadIdx.y;
 
 	// Calculate new value in tableau
 	if (row != pivot_row && col != pivot_col) {
