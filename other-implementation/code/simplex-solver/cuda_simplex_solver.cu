@@ -75,7 +75,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	bool done;
 	bool d_done;
 	for (;;) {
-		find_pivot_row_and_col<<<1,1>>>(d_pivot_row, d_pivot_col, tableau, num_rows, num_cols, d_done);
+		find_pivot_row_and_col<<<1,1>>>(&d_pivot_row, &d_pivot_col, tableau, num_rows, num_cols, &d_done);
 
 		if (cudaMemcpy(&done, d_done, sizeof(bool), cudaMemcpyDeviceToHost) != cudaSuccess) {
 			std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
@@ -93,7 +93,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		//std::cerr << "pivot_row: " << pivot_row << std::endl;
 		//std::cerr << "pivot_col: " << pivot_col << std::endl;
 		//std::cerr << "AFTER PIVOT" << std::endl;
-		pivot(&d_pivot_row, &d_pivot_col_loc, num_rows, num_cols, flat_tableau, cuda_tableau);
+		pivot(&d_pivot_row, &d_pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
 
