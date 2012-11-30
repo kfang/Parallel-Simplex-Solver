@@ -70,7 +70,6 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 
 	// While the objective function can be increased, find a better
 	// vertex on the simplex.
-	int pivot_col, pivot_row;
 	int d_pivot_col, d_pivot_row;
 	bool done;
 	bool d_done;

@@ -24,6 +24,7 @@ __global__ void cuda_pivot(int* pivot_row_loc, int* pivot_col_loc,
 }
 
 __global__ void fix_pivot_col(int* pivot_row_loc, int* pivot_col_loc, int num_rows, int num_cols, float* tableau) {
+	int pivot_row = *pivot_row_loc;
 	int pivot_col = *pivot_col_loc;
 
 	int row = blockIdx.x * blockDim.x + threadIdx.x;
@@ -37,7 +38,7 @@ __global__ void fix_pivot_col(int* pivot_row_loc, int* pivot_col_loc, int num_ro
 	}
 }
 
-__global__ void scale_pivot_row(int pivot_row_loc, int pivot_col_loc, int num_rows, int num_cols, float* tableau) {
+__global__ void scale_pivot_row(int* pivot_row_loc, int* pivot_col_loc, int num_rows, int num_cols, float* tableau) {
 	int pivot_row = *pivot_row_loc;
 	int pivot_col = *pivot_col_loc;
 	
