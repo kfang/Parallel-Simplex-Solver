@@ -40,6 +40,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 	int num_cols = num_variables + num_constraints + 1;
 
 	double time = timestamp();
+	std::cerr << "Setup done" << std::endl;
 
 	float* flat_tableau;
 	flat_tableau = (float *) malloc(num_rows*num_cols*sizeof(float));
@@ -48,8 +49,6 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 			flat_tableau[i*num_cols + j] = tableau[i][j];
 		}
 	}
-
-	std::cerr << "Setup done" << std::endl;
 
 	//Cuda Pointer and mem
 	float* cuda_tableau;
@@ -92,7 +91,7 @@ Simplex_Solution Cuda_Simplex_Solver::solve(Simplex_Problem& problem)
 		//std::cerr << "pivot_row: " << pivot_row << std::endl;
 		//std::cerr << "pivot_col: " << pivot_col << std::endl;
 		//std::cerr << "AFTER PIVOT" << std::endl;
-		pivot(&d_pivot_row, &d_pivot_col, num_rows, num_cols, flat_tableau, cuda_tableau);
+		pivot(&d_pivot_row, &d_pivot_col, num_rows, num_cols, cuda_tableau);
 		//print_flat_matrix(num_rows, num_cols, flat_tableau);
 	}
 
